@@ -1,0 +1,9 @@
+test/
+__pycache__/
+.DS_Store
+desktop.ini
+Thumbs.db
+data_copy.json
+_to_delete/
+
+_predare/

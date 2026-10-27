@@ -1,0 +1,1101 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Investigații de teren – Parc eolian Dăeni</title>
+<meta name="description" content="Raport interactiv al investigațiilor geotehnice de teren (foraje geotehnice cu SPT, penetrări statice CPT și încercări de laborator) executate pentru fundațiile turbinelor Parcului eolian Dăeni, jud. Tulcea.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<style>
+:root{
+  --navy:#0A2F4F;        /* albastru închis (Fugro) */
+  --blue:#0069B4;        /* albastru Fugro */
+  --blue-l:#E6F0F8;
+  --orange:#F28C00;      /* portocaliu Eijkelkamp */
+  --orange-l:#FDEBD3;
+  --ink:#1B2430;
+  --ink-2:#4A5560;
+  --ink-3:#7B8794;
+  --line:#D9DFE5;
+  --line-2:#EDF0F3;
+  --bg:#FFFFFF;
+  --bg-2:#F6F8FA;
+  --ok:#2E8B57;
+  --water:#1F8FD8;
+  --sans:"Barlow",system-ui,Segoe UI,Arial,sans-serif;
+  --cond:"Barlow Condensed","Barlow",system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Consolas,monospace;
+  --r:6px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.45}
+a{color:var(--blue)}
+button{font-family:inherit}
+h1,h2,h3,h4{font-family:var(--cond);font-weight:600;margin:0;line-height:1.1;letter-spacing:.01em}
+.mono{font-family:var(--mono);font-size:.86em}
+.wrap{max-width:1240px;margin:0 auto;padding:0 20px}
+@media(max-width:600px){.wrap{padding:0 16px}}
+
+/* ---------- header ---------- */
+.topbar{background:var(--navy);color:#fff;border-bottom:4px solid var(--orange)}
+.topbar .wrap{display:flex;align-items:center;gap:18px;height:64px}
+.brand{display:flex;align-items:center;gap:12px;text-decoration:none;color:#fff}
+.brand .mark{width:34px;height:34px;display:grid;place-items:center;background:var(--orange);border-radius:4px;font-family:var(--cond);font-weight:700;font-size:18px;color:var(--navy)}
+.brand b{font-family:var(--cond);font-size:21px;font-weight:600;letter-spacing:.02em}
+.brand small{display:block;font-size:11.5px;opacity:.75;letter-spacing:.08em;text-transform:uppercase;font-weight:500}
+.nav{margin-left:auto;display:flex;gap:4px}
+.nav a{color:#fff;opacity:.8;text-decoration:none;padding:8px 12px;border-radius:4px;font-weight:500;font-size:14px}
+.nav a.active,.nav a:hover{opacity:1;background:rgba(255,255,255,.12)}
+@media(max-width:800px){.brand small{display:none}.nav a{padding:8px 7px;font-size:13px}}
+@media(max-width:560px){.nav a.sec{display:none}.brand b{font-size:17px}.nav a{padding:7px 5px;font-size:12.5px}.topbar .wrap{gap:10px}}
+
+.hero{border-bottom:1px solid var(--line);background:linear-gradient(180deg,#fff,var(--bg-2))}
+.hero .wrap{padding:28px 20px 22px;display:grid;grid-template-columns:1.4fr 1fr;gap:24px;align-items:end}
+.hero h1{font-size:40px;color:var(--navy)}
+.hero .sub{color:var(--ink-2);margin-top:6px;max-width:60ch}
+.kicker{font-family:var(--cond);text-transform:uppercase;letter-spacing:.12em;font-size:13px;color:var(--orange);font-weight:700}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.stat{background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:10px 12px}
+.stat b{display:block;font-family:var(--cond);font-size:28px;color:var(--navy);line-height:1;white-space:nowrap}
+.stat span{font-size:12px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.06em}
+.stat b small{font-size:15px;color:var(--ink-3);font-weight:500}
+@media(max-width:900px){.hero .wrap{grid-template-columns:1fr}.hero h1{font-size:32px}}
+/* ---------- intro 3D ---------- */
+.hero{position:relative;overflow:hidden}
+#intro3d{display:none}
+.hero.has3d #intro3d{display:block;position:absolute;inset:0;z-index:1}
+#intro3d canvas{display:block;width:100%;height:100%;cursor:grab}
+.hero.has3d{min-height:660px}
+.hero.has3d::after{content:"";position:absolute;inset:0 55% 0 0;background:linear-gradient(90deg,rgba(255,255,255,.96) 35%,rgba(255,255,255,0));z-index:1;pointer-events:none}
+.hero.has3d .wrap{position:relative;z-index:2;pointer-events:none;grid-template-columns:minmax(0,470px);align-items:start;gap:18px;padding-top:34px}
+.hero.has3d .stats{grid-template-columns:repeat(2,1fr);max-width:360px}
+.hero.has3d h1{font-size:36px}
+.hero.has3d .stat{background:rgba(255,255,255,.9)}
+.i3-hud{position:absolute;right:20px;bottom:14px;z-index:3;text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:6px;pointer-events:none}
+.i3-hud .btn{pointer-events:auto}
+.i3-date b{font-family:var(--cond);font-size:34px;color:var(--navy);line-height:1;display:block}
+.i3-date span{font-family:var(--mono);font-size:12px;color:var(--ink-2)}
+.i3-leg{display:flex;gap:12px;flex-wrap:wrap;justify-content:flex-end;font-size:12.5px;color:var(--ink-2)}
+.i3-leg i{display:inline-block;width:10px;height:10px;margin-right:5px;vertical-align:-1px}
+.i3-note{font-size:11.5px;color:var(--ink-3);max-width:360px}
+.i3-tip{position:absolute;z-index:4;display:none;background:#fff;border:1px solid var(--line);border-left:3px solid var(--orange);border-radius:4px;padding:7px 10px;font-size:12.5px;line-height:1.4;box-shadow:0 6px 18px rgba(10,47,79,.16);pointer-events:none;min-width:150px}
+.i3-tip b{font-family:var(--cond);font-size:17px;color:var(--navy)}.i3-tip .w{color:var(--water);font-weight:600}.i3-tip em{color:var(--ink-3);font-size:11px}
+@media(max-width:900px){
+  .hero.has3d{min-height:0}
+  .hero.has3d #intro3d{position:relative;inset:auto;height:420px}
+  .hero.has3d::after{display:none}
+  .hero.has3d .wrap{grid-template-columns:1fr}
+  .hero.has3d .stats{max-width:none;grid-template-columns:repeat(3,1fr)}
+  .i3-hud{right:16px;left:16px;bottom:10px}.i3-note{display:none}.i3-date b{font-size:26px}
+}
+@media print{.hero.has3d #intro3d,.hero.has3d::after{display:none}.hero.has3d{min-height:0}}
+@media(max-width:520px){.stats,.hero.has3d .stats{grid-template-columns:repeat(2,1fr)}}
+
+/* ---------- layout ---------- */
+section.block{padding:26px 0;border-bottom:1px solid var(--line-2)}
+.sec-h{display:flex;align-items:baseline;gap:14px;margin-bottom:14px;flex-wrap:wrap}
+.sec-h h2{font-size:24px;color:var(--navy)}
+.sec-h .n{font-family:var(--mono);font-size:12px;color:var(--ink-3)}
+.sec-h .right{margin-left:auto;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+
+#map{height:560px;border:1px solid var(--line);border-radius:var(--r);background:#eef1f4}
+@media(max-width:700px){#map{height:400px}}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:10px;font-size:13px;color:var(--ink-2)}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:6px;vertical-align:-1px;border:2px solid #fff;box-shadow:0 0 0 1px rgba(0,0,0,.25)}
+.leaflet-container{font-family:var(--sans)}
+.leaflet-popup-content{margin:10px 12px;font-size:13px}
+.leaflet-popup-content b{font-family:var(--cond);font-size:16px;color:var(--navy)}
+.pop a{display:inline-block;margin-top:6px;font-weight:600}
+
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{border:1px solid var(--line);background:#fff;border-radius:999px;padding:5px 12px;font-size:13px;cursor:pointer;color:var(--ink-2);font-weight:500}
+.chip.on{background:var(--navy);border-color:var(--navy);color:#fff}
+.chip.on.or{background:var(--orange);border-color:var(--orange);color:#fff}
+input.search{border:1px solid var(--line);border-radius:var(--r);padding:6px 10px;font:inherit;font-size:14px;min-width:170px}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px}
+.card{border:1px solid var(--line);border-radius:var(--r);overflow:hidden;background:#fff;cursor:pointer;transition:box-shadow .15s,transform .15s;text-decoration:none;color:inherit;display:block}
+.card:hover{box-shadow:0 6px 18px rgba(10,47,79,.14);transform:translateY(-1px)}
+.card .img{aspect-ratio:4/3;background:var(--bg-2);position:relative;overflow:hidden}
+.card .img img{width:100%;height:100%;object-fit:cover;display:block}
+.card .tag{position:absolute;left:8px;top:8px;background:var(--navy);color:#fff;font-family:var(--cond);font-weight:600;padding:2px 8px;border-radius:3px;font-size:14px;letter-spacing:.03em}
+.card .cnt{position:absolute;right:8px;bottom:8px;background:rgba(0,0,0,.55);color:#fff;font-size:11px;padding:2px 7px;border-radius:3px;font-family:var(--mono)}
+.card .body{padding:10px 12px}
+.card .t{font-family:var(--cond);font-size:19px;color:var(--navy);font-weight:600}
+.card .m{font-size:12.5px;color:var(--ink-3);display:flex;justify-content:space-between;margin-top:3px;gap:6px}
+.card .strata{display:flex;height:7px;border-radius:2px;overflow:hidden;margin-top:9px;border:1px solid var(--line)}
+.card .strata i{display:block;height:100%}
+.card .w{font-size:12px;margin-top:6px;color:var(--ink-2)}
+.card .w.has{color:var(--water);font-weight:600}
+.card.fc .img{aspect-ratio:auto;height:104px;padding:10px 12px;display:flex;align-items:flex-end;gap:10px;background:#fff}
+.card.fc .spark,.card.cptc .spark{flex:1;height:100%}
+.card.fc .spark svg,.card.cptc .spark svg{width:100%;height:100%;display:block}
+.card .strata.v{width:14px;height:100%;flex-direction:column;margin:0}
+.zone-tag{display:inline-block;font-family:var(--cond);font-weight:600;font-size:12px;letter-spacing:.06em;color:var(--navy);background:var(--blue-l);border-radius:3px;padding:1px 6px;vertical-align:2px}
+.zone-tag.s{background:var(--orange-l);color:#9a5a00}
+
+/* ---------- calendar / zile ---------- */
+.days{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px}
+.day{border:1px solid var(--line);border-radius:var(--r);padding:12px 14px;background:#fff}
+.day.nodate{border-style:dashed;grid-column:1/-1}
+.day .d{font-family:var(--cond);font-size:20px;color:var(--navy);font-weight:600}
+.day .wx{display:flex;align-items:center;gap:10px;margin:8px 0;padding:8px 10px;background:var(--bg-2);border-radius:4px;font-size:13px}
+.day .wx svg{width:34px;height:34px;flex:none}
+.day .wx b{font-size:17px;font-family:var(--cond);color:var(--navy)}
+.day .ids{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}
+.day .ids a{font-family:var(--mono);font-size:12px;border:1px solid var(--line);border-radius:3px;padding:1px 6px;text-decoration:none;color:var(--navy)}
+.day .ids a.cpt{border-color:var(--orange);color:#9a5a00;background:var(--orange-l)}
+.day .ids a.fc{border-color:var(--blue);color:var(--blue);background:var(--blue-l)}
+.campaign{font-family:var(--cond);font-size:18px;color:var(--navy);margin:18px 0 8px;display:flex;align-items:baseline;gap:10px}
+.campaign:first-child{margin-top:0}
+.campaign .n{font-family:var(--mono);font-size:12px;color:var(--ink-3)}
+
+/* ---------- table ---------- */
+table.tbl{width:100%;border-collapse:collapse;font-size:13.5px}
+.tbl th{font-family:var(--cond);font-weight:600;text-align:left;color:var(--ink-2);text-transform:uppercase;letter-spacing:.06em;font-size:12px;padding:8px 10px;border-bottom:2px solid var(--line);background:var(--bg-2);position:sticky;top:0}
+.tbl td{padding:7px 10px;border-bottom:1px solid var(--line-2);vertical-align:top}
+.tbl tr:hover td{background:#fbfcfd}
+.tbl .num{font-family:var(--mono);font-size:12.5px;white-space:nowrap}
+.tblwrap{overflow:auto;border:1px solid var(--line);border-radius:var(--r)}
+
+/* ---------- stadiu ---------- */
+.zones{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px}
+.zone{border:1px solid var(--line);border-radius:var(--r);background:#fff;padding:14px 16px;border-top:4px solid var(--blue)}
+.zone.s{border-top-color:var(--orange)}
+.zone h3{font-size:20px;color:var(--navy);margin-bottom:10px}
+.zone .pl{display:flex;justify-content:space-between;gap:8px;font-size:13.5px;align-items:baseline;margin-top:8px}
+.zone .pl b{font-family:var(--cond);font-size:15px;color:var(--navy);font-weight:600}
+.zone .bar{height:8px;background:var(--line-2);border-radius:4px;overflow:hidden;margin:5px 0 3px}
+.zone .bar i{display:block;height:100%;background:var(--blue)}
+.zone .bar i.or{background:var(--orange)}
+.zone .pp{font-size:12px;color:var(--ink-3)}
+.zone .kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
+.zone .kpis div{background:var(--bg-2);border-radius:4px;padding:7px 9px;font-size:11.5px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.05em}
+.zone .kpis b{display:block;font-family:var(--cond);font-size:20px;color:var(--navy);text-transform:none;letter-spacing:0}
+
+/* ---------- detail ---------- */
+.detail{display:none}
+.detail.open{display:block}
+.back{display:inline-flex;align-items:center;gap:6px;color:var(--blue);text-decoration:none;font-weight:600;margin:18px 0 6px}
+.dhead{display:flex;flex-wrap:wrap;gap:16px;align-items:flex-end;padding-bottom:16px;border-bottom:2px solid var(--navy)}
+.dhead h1{font-size:42px;color:var(--navy)}
+.dhead .type{font-family:var(--cond);font-size:14px;letter-spacing:.1em;text-transform:uppercase;color:#fff;background:var(--blue);padding:3px 9px;border-radius:3px;font-weight:600}
+.dhead .pn{margin-left:auto;display:flex;gap:6px}
+.pn a{border:1px solid var(--line);border-radius:4px;padding:6px 10px;text-decoration:none;color:var(--navy);font-family:var(--cond);font-weight:600;font-size:15px}
+.pn a:hover{background:var(--bg-2)}
+.pn a.dis{opacity:.35;pointer-events:none}
+.meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin:16px 0}
+.kv{border:1px solid var(--line);border-radius:var(--r);padding:9px 12px;background:#fff}
+.kv span{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-3);font-family:var(--cond);font-weight:600}
+.kv b{font-weight:600;font-size:15px;color:var(--ink)}
+.kv b.mono{font-size:13px}
+.kv.water b{color:var(--water)}
+.kv .sm{font-size:12px;color:var(--ink-3);margin-top:2px}
+.kv b span,.kv b a{display:inline;text-transform:none;letter-spacing:0;font-family:var(--sans);font-size:12.5px}
+.cols{display:grid;grid-template-columns:300px minmax(0,1fr);gap:22px;align-items:start}
+.cols.wide{grid-template-columns:minmax(0,1.9fr) minmax(0,1fr)}
+@media(max-width:1000px){.cols.wide{grid-template-columns:1fr}}
+@media(max-width:800px){.cols{grid-template-columns:1fr}}
+.panel{border:1px solid var(--line);border-radius:var(--r);background:#fff}
+.panel h3{font-size:17px;color:var(--navy);padding:10px 14px;border-bottom:1px solid var(--line-2);background:var(--bg-2);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.panel h3 .n{font-family:var(--mono);font-size:11px;color:var(--ink-3);font-weight:400;margin-left:auto}
+.panel .in{padding:12px 14px}
+svg.log{width:100%;height:auto;display:block}
+svg.log text{font-family:var(--mono)}
+
+.wx-card{display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:center}
+.wx-card svg{width:64px;height:64px}
+.wx-card .big{font-family:var(--cond);font-size:30px;color:var(--navy);line-height:1}
+.wx-card .desc{font-weight:600;color:var(--ink-2)}
+.wx-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px;margin-top:12px}
+.wx-grid div{background:var(--bg-2);border-radius:4px;padding:7px 9px;font-size:12.5px;color:var(--ink-2)}
+.wx-grid b{display:block;font-family:var(--mono);color:var(--ink);font-size:13px}
+.src{font-size:11.5px;color:var(--ink-3);margin-top:8px}
+
+.gal{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px}
+.gal a{display:block;aspect-ratio:3/4;overflow:hidden;border-radius:4px;border:1px solid var(--line);background:var(--bg-2);position:relative}
+.gal a img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .2s}
+.gal a:hover img{transform:scale(1.03)}
+.gal a.land{aspect-ratio:4/3;grid-column:span 2}
+.gal a .cap{position:absolute;left:0;right:0;bottom:0;background:linear-gradient(transparent,rgba(0,0,0,.6));color:#fff;font-size:11px;padding:16px 8px 6px;font-family:var(--mono)}
+.fisa{display:grid;grid-template-columns:1fr 1.3fr;gap:16px}
+@media(max-width:800px){.fisa{grid-template-columns:1fr}}
+.fisa a.img{display:block;border:1px solid var(--line);border-radius:4px;overflow:hidden}
+.fisa a.img img{width:100%;display:block}
+.probe-empty{color:var(--ink-3);font-size:13.5px}
+.note{font-size:13px;background:var(--orange-l);border-left:3px solid var(--orange);padding:8px 10px;border-radius:0 4px 4px 0;color:#6b3f00;margin-top:10px}
+.note.info{background:var(--blue-l);border-left-color:var(--blue);color:var(--navy)}
+
+/* ---------- lightbox ---------- */
+.lb{position:fixed;inset:0;background:rgba(10,20,30,.92);display:none;z-index:50;align-items:center;justify-content:center;flex-direction:column}
+.lb.open{display:flex}
+.lb img{max-width:94vw;max-height:84vh;object-fit:contain;border-radius:4px;box-shadow:0 10px 40px rgba(0,0,0,.5)}
+.lb .cap{color:#fff;margin-top:10px;font-family:var(--mono);font-size:13px;opacity:.85}
+.lb button{position:absolute;top:50%;transform:translateY(-50%);background:rgba(255,255,255,.12);color:#fff;border:0;width:46px;height:46px;border-radius:50%;font-size:26px;cursor:pointer}
+.lb .prev{left:14px}.lb .next{right:14px}
+.lb .x{top:16px;right:16px;transform:none;font-size:22px}
+
+/* ---------- CPT ---------- */
+.card .tag.cpt{background:var(--orange)}
+.card .tag.cptu{background:var(--orange);box-shadow:inset 0 0 0 2px var(--navy)}
+.card.cptc .img{aspect-ratio:auto;height:92px;padding:10px 12px;display:flex;align-items:flex-end;gap:10px;background:#fff}
+.cpt-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px}
+.turb{margin:16px 0 8px;display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;border-top:1px solid var(--line-2);padding-top:12px}
+.turb:first-child{border-top:0;padding-top:0;margin-top:0}
+.turb h3{font-size:19px;color:var(--navy)}
+.turb .n{font-family:var(--mono);font-size:12px;color:var(--ink-3)}
+.turb a.fl{margin-left:auto;font-size:13px;font-weight:600}
+.cpt-charts{display:flex;border:1px solid var(--line);border-radius:var(--r);background:#fff;overflow:auto}
+.cpt-charts .ch{border-left:1px solid var(--line-2);flex:0 0 auto}
+.cpt-charts .ch:first-child{border-left:0}
+.cpt-charts .ch svg{height:760px;width:auto}
+@media(max-width:700px){.cpt-charts .ch svg{height:600px}}
+.cpt-charts .ch h4{font-size:13px;color:var(--navy);padding:8px 10px 2px;font-weight:600;letter-spacing:.02em;white-space:nowrap}
+.cpt-charts .ch h4 small{font-family:var(--mono);font-weight:400;color:var(--ink-3);font-size:11px;margin-left:4px}
+.cpt-charts svg{display:block}
+.cpt-charts svg text{font-family:var(--mono)}
+.sbt-leg{display:flex;flex-wrap:wrap;gap:8px 14px;font-size:12.5px;color:var(--ink-2);margin-top:8px}
+.sbt-leg i{display:inline-block;width:12px;height:12px;border-radius:2px;margin-right:5px;vertical-align:-1px;border:1px solid rgba(0,0,0,.2)}
+
+/* ---------- laborator ---------- */
+.lab-wrap{display:grid;grid-template-columns:minmax(0,440px) minmax(0,1fr);gap:18px;align-items:start}
+@media(max-width:1000px){.lab-wrap{grid-template-columns:1fr}}
+.casa svg{width:100%;height:auto;display:block}
+.casa svg text{font-family:var(--mono)}
+.fleg{display:flex;flex-wrap:wrap;gap:6px 12px;font-size:12px;color:var(--ink-2);margin-top:8px}
+.fleg i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:4px;vertical-align:-1px}
+.fleg i.dia{transform:rotate(45deg);border-radius:1px}
+.tbl.lab td,.tbl.lab th{padding:6px 7px}
+.tbl.lab th{font-size:11px;letter-spacing:.03em;text-transform:none;white-space:nowrap}
+.tbl.lab td.num{font-size:12px}
+.tbl.lab td.desc{min-width:230px}
+.nt{display:inline-block;font-family:var(--cond);font-weight:600;font-size:11px;letter-spacing:.04em;border-radius:3px;padding:0 5px;background:var(--orange-l);color:#9a5a00}
+.nt.tu{background:var(--line-2);color:var(--ink-3)}
+footer{padding:26px 0 40px;color:var(--ink-3);font-size:12.5px}
+footer .wrap{display:flex;flex-wrap:wrap;gap:8px 24px}
+.btn{border:1px solid var(--line);background:#fff;border-radius:var(--r);padding:6px 12px;font-size:13px;cursor:pointer;color:var(--navy);font-weight:600}
+.btn:hover{background:var(--bg-2)}
+select.sel{border:1px solid var(--line);border-radius:var(--r);padding:6px 8px;font:inherit;font-size:13px;background:#fff;color:var(--navy)}
+@media print{
+  .topbar .nav,.chips,.btn,.pn,.back,.lb,select.sel{display:none!important}
+  #map{height:420px}
+  .card:hover{box-shadow:none;transform:none}
+  section.block{break-inside:avoid}
+  .detail.open{display:block}
+}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="wrap">
+    <a class="brand" href="#/">
+      <span class="mark">IG</span>
+      <span><b>Investigații de teren</b><small>Parc eolian Dăeni · jud. Tulcea · foraje + CPT + laborator</small></span>
+    </a>
+    <nav class="nav">
+      <a href="#/" data-nav="/">Sinteză</a>
+      <a href="#/harta" data-nav="/harta" class="sec">Hartă</a>
+      <a href="#/foraje" data-nav="/foraje">Foraje</a>
+      <a href="#/cpt" data-nav="/cpt">CPT</a>
+      <a href="#/laborator" data-nav="/laborator">Laborator</a>
+      <a href="#/galerie" data-nav="/galerie" class="sec">Foto</a>
+      <a href="#/zile" data-nav="/zile" class="sec">Calendar</a>
+      <a href="#/tabel" data-nav="/tabel" class="sec">Tabel</a>
+    </nav>
+  </div>
+</header>
+
+<main id="app">
+  <!-- ======== pagina principală ======== -->
+  <div id="home">
+    <div class="hero">
+      <div class="wrap">
+        <div>
+          <div class="kicker" id="h-kicker">Raport de teren</div>
+          <h1 id="h-title">Investigații geotehnice</h1>
+          <p class="sub" id="h-sub"></p>
+        </div>
+        <div class="stats" id="stats"></div>
+      </div>
+      <div id="intro3d" aria-label="Vedere 3D stilizată a amplasamentului și a investigațiilor executate"></div>
+    </div>
+
+    <section class="block" id="harta">
+      <div class="wrap">
+        <div class="sec-h"><h2>Amplasarea investigațiilor</h2><span class="n">WGS84 · foraje din Stereo 70 (fișe) · CPT din GPS teren (jurnalul campaniei) sau din plan · etichetele CPT apar la zoom</span>
+          <div class="right"><button class="btn" id="btn-sat">Satelit</button><button class="btn" id="btn-fit">Încadrează</button></div></div>
+        <div id="map"></div>
+        <div class="legend">
+          <span><i style="background:var(--blue)"></i>Foraj geotehnic 30 m + SPT (centrul turbinei)</span>
+          <span><i style="background:var(--orange);border-radius:1px;box-shadow:0 0 0 1px #fff,0 0 0 3px var(--navy)"></i>CPT executat (oct.–dec. 2025)</span>
+          <span><i style="background:#9AA5B1;border-radius:1px;width:9px;height:9px"></i>turbină fără CPT (WT54)</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="block" id="stadiu-sec">
+      <div class="wrap">
+        <div class="sec-h"><h2>Stadiu execuție</h2><span class="n">executat / proiectat pe zone (1 foraj de 30 m + 1 CPT în centrul fiecărei turbine, WT1–WT56)</span></div>
+        <div class="zones" id="stadiu"></div>
+      </div>
+    </section>
+
+    <section class="block" id="foraje">
+      <div class="wrap">
+        <div class="sec-h"><h2>Foraje geotehnice executate</h2><span class="n" id="cnt"></span>
+          <div class="right">
+            <div class="chips" id="chips">
+              <button class="chip on" data-f="all">Toate</button>
+              <button class="chip" data-f="N">Zona N</button>
+              <button class="chip" data-f="S">Zona S</button>
+              <button class="chip" data-f="apa">Cu apă</button>
+            </div>
+            <input class="search" id="q" placeholder="Caută (ex: WT21, șist, loess)…">
+          </div>
+        </div>
+        <div class="grid" id="grid"></div>
+      </div>
+    </section>
+
+    <section class="block" id="cpt">
+      <div class="wrap">
+        <div class="sec-h"><h2>Penetrări statice cu con electric (CPT)</h2><span class="n" id="cpt-cnt"></span>
+          <div class="right">
+            <div class="chips" id="cpt-chips">
+              <button class="chip on" data-f="all">Toate</button>
+              <button class="chip" data-f="N">Zona N</button>
+              <button class="chip" data-f="S">Zona S</button>
+              <button class="chip or" data-f="scurte">Oprite &lt; 20 m</button>
+            </div>
+          </div>
+        </div>
+        <p style="margin:0 0 12px;color:var(--ink-2);font-size:13.5px" id="cpt-intro"></p>
+        <div id="cpt-groups"></div>
+        <div class="sbt-leg" id="sbt-leg"></div>
+      </div>
+    </section>
+
+    <section class="block" id="laborator">
+      <div class="wrap">
+        <div class="sec-h"><h2>Încercări de laborator</h2><span class="n" id="lab-cnt"></span>
+          <div class="right">
+            <div class="chips" id="lab-chips">
+              <button class="chip on" data-f="all">Toate</button>
+              <button class="chip" data-f="N">Zona N</button>
+              <button class="chip" data-f="S">Zona S</button>
+              <button class="chip or" data-f="US">Doar netulburate</button>
+            </div>
+            <select class="sel" id="lab-sel"><option value="">toate forajele</option></select>
+            <button class="btn" id="btn-csv-lab">Descarcă CSV</button><button class="btn" id="btn-csv-spt">CSV SPT</button></div></div>
+        <p style="margin:0 0 12px;color:var(--ink-2);font-size:13.5px" id="lab-intro"></p>
+        <div class="lab-wrap">
+          <div class="panel"><h3>Diagrama de plasticitate <span class="n">I<sub>P</sub> – w<sub>L</sub> (Casagrande)</span></h3><div class="in casa" id="casa"></div></div>
+          <div class="tblwrap" style="max-height:600px"><table class="tbl lab" id="tbl-lab"></table></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="block" id="galerie" style="display:none">
+      <div class="wrap">
+        <div class="sec-h"><h2>Fotografii de zonă</h2><span class="n" id="gal-zona-n"></span></div>
+        <div class="gal" id="gal-zona"></div>
+      </div>
+    </section>
+
+    <section class="block" id="zile">
+      <div class="wrap">
+        <div class="sec-h"><h2>Calendar de execuție și condiții meteo</h2><span class="n" id="wx-src"></span></div>
+        <div id="days"></div>
+      </div>
+    </section>
+
+    <section class="block" id="tabel">
+      <div class="wrap">
+        <div class="sec-h"><h2>Centralizator foraje</h2><span class="n">foraje geotehnice executate · coordonate din fișe (GEO-TECH SRL)</span>
+          <div class="right"><button class="btn" id="btn-csv">Descarcă CSV</button><button class="btn" onclick="window.print()">Tipărește</button></div></div>
+        <div class="tblwrap"><table class="tbl" id="tbl"></table></div>
+        <div class="sec-h" style="margin-top:26px"><h2>Centralizator CPT</h2><span class="n">penetrări statice, 25.10 – 09.12.2025</span>
+          <div class="right"><button class="btn" id="btn-csv-cpt">Descarcă CSV</button></div></div>
+        <div class="tblwrap"><table class="tbl" id="tbl-cpt"></table></div>
+      </div>
+    </section>
+  </div>
+
+  <!-- ======== pagina de detaliu ======== -->
+  <div id="detail" class="detail"><div class="wrap" id="detail-in"></div></div>
+</main>
+
+<footer><div class="wrap">
+  <span id="f-exec"></span>
+  <span>Fundal hartă: © OpenStreetMap contributors · Imagini satelit: Esri World Imagery · Relief: EU-DEM 25 m</span>
+  <span>Meteo: Open-Meteo (reanaliză ERA5), punct de grilă cel mai apropiat</span>
+  <span>CPT: Geo-Explorer v2.0, BBCGEOTEHNIC SRL · interpretare SBT după Robertson (2009/2010), indicativă · Foraje + laborator: GEO-TECH SRL (fișe formatate)</span>
+  <span id="f-gen"></span>
+</div></footer>
+
+<div class="lb" id="lb">
+  <button class="x" id="lb-x">×</button>
+  <button class="prev" id="lb-p">‹</button>
+  <img id="lb-img" alt="">
+  <div class="cap" id="lb-cap"></div>
+  <button class="next" id="lb-n">›</button>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="intro3d.js"></script>
+<script>
+/* ============================================================
+   Aplicație de raportare – investigații de teren, Parc eolian Dăeni (jud. Tulcea)
+   Date: data.json (scripts/build_data.py) + cpt.json (scripts/build_cpt.py)
+   ============================================================ */
+let D = null, INV = [], CPT = [], LAB = [], CPTFULL = null, map = null, markers = {}, satOn = false, baseOSM, baseSat;
+
+const fmtDate = s => { if(!s) return '—'; const [y,m,d]=s.split('-'); return `${d}.${m}.${y}`; };
+const ZILE = ['duminică','luni','marți','miercuri','joi','vineri','sâmbătă'];
+const fmtDateL = s => { if(!s) return 'dată necompletată'; const dt=new Date(s+'T12:00:00'); return `${ZILE[dt.getDay()]}, ${fmtDate(s)}`; };
+const esc = s => String(s??'').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const n2 = v => (v==null||isNaN(v)?'—':Number(v).toFixed(2).replace('.',','));
+const n1 = v => (v==null||isNaN(v)?'—':Number(v).toFixed(1).replace('.',','));
+const n0 = v => (v==null||isNaN(v)?'—':Number(v).toFixed(0));
+const numSort = (a,b) => a.localeCompare(b,undefined,{numeric:true});
+const zoneTag = z => `<span class="zone-tag ${z==='S'?'s':''}">zona ${esc(z)}</span>`;
+const isStatie = i => false;
+const hasWater = i => i.NH!=null || i.IN!=null;
+const waterTxt = i => i.NH!=null ? `NA = ${n1(i.NH)} m` : (i.IN!=null ? `infiltrație la ${n2(i.IN)} m` : (i.apa||'fără apă'));
+const ZCOL = {N:'#0069B4', S:'#F28C00'};
+
+/* ---- litologie -> culoare / hașură (după descrierea din fișă) ---- */
+function litho(desc){
+  const t = (desc||'').toLowerCase();
+  if (t.startsWith('umplutur') || t.startsWith('sol veg')) return {c:'#6B4F2A', p:'veg', k:'sol vegetal / umplutură'};
+  if (t.startsWith('pietriș') || t.startsWith('pietris')) return {c:'#D9B36B', p:'gravel', k:'pietriș cu nisip'};
+  if (t.startsWith('mâl') || t.startsWith('mal ')) return {c:'#7D7A6A', p:'clay', k:'mâl'};
+  if (/^nisip/.test(t) && t.includes('cu pietriș') && !t.includes('rar')) return {c:'#EFC45A', p:'gravel', k:'nisip cu pietriș'};
+  if (/^nisip/.test(t) && (t.includes('argilos'))) return {c:'#E0C98A', p:'sand', k:'nisip argilos'};
+  if (/^nisip/.test(t) && t.includes('prăfos')) return {c:'#EBCF7A', p:'sand', k:'nisip prăfos'};
+  if (/^nisip/.test(t)) return {c:'#F3D36B', p:'sand', k:'nisip (± rar pietriș)'};
+  if (t.includes('praf') && t.includes('loessoid')) return {c:'#E4C27C', p:'silt', k:'praf argilos (nisipos) loessoid'};
+  if (t.includes('praf argilos nisipos')) return {c:'#DEBB78', p:'silt', k:'praf argilos nisipos'};
+  if (t.includes('praf argilos')) return {c:'#C9A46B', p:'silt', k:'praf argilos'};
+  if (t.includes('praf')) return {c:'#D6B57A', p:'silt', k:'praf'};
+  if (t.startsWith('argilă prăfoasă') || t.startsWith('argila prafoasa')) return {c:'#B8905A', p:'clay', k:'argilă prăfoasă'};
+  if (t.startsWith('argilă nisipoasă') || t.startsWith('argila nisipoasa')) return {c:'#C4A070', p:'clay', k:'argilă nisipoasă'};
+  if (t.includes('argil')) return {c:'#A8814D', p:'clay', k:'argilă'};
+  return {c:'#D8D1C5', p:'', k:'altele'};
+}
+
+/* ---- meteo: cod WMO -> descriere + icon ---- */
+const WMO = {0:'senin',1:'predominant senin',2:'parțial noros',3:'noros',45:'ceață',48:'ceață cu chiciură',51:'burniță slabă',53:'burniță moderată',55:'burniță densă',56:'burniță înghețată',57:'burniță înghețată',61:'ploaie slabă',63:'ploaie moderată',65:'ploaie puternică',66:'ploaie înghețată',67:'ploaie înghețată',71:'ninsoare slabă',73:'ninsoare moderată',75:'ninsoare puternică',77:'măzăriche',80:'averse slabe',81:'averse moderate',82:'averse violente',85:'averse de zăpadă',86:'averse de zăpadă',95:'furtună',96:'furtună cu grindină',99:'furtună cu grindină'};
+function wxIcon(code){
+  const sun = `<circle cx="32" cy="32" r="11" fill="#F28C00"/><g stroke="#F28C00" stroke-width="3" stroke-linecap="round">${[0,45,90,135,180,225,270,315].map(a=>`<line x1="32" y1="12" x2="32" y2="6" transform="rotate(${a} 32 32)"/>`).join('')}</g>`;
+  const cloud = (x=0,y=0,f='#B8C2CC') => `<path transform="translate(${x} ${y})" d="M20 44a9 9 0 0 1-1-18 12 12 0 0 1 23-3 8 8 0 0 1 9 8 6.5 6.5 0 0 1-1 13z" fill="${f}" stroke="#8C98A4" stroke-width="1.5"/>`;
+  const drops = `<g stroke="#1F8FD8" stroke-width="3" stroke-linecap="round"><line x1="22" y1="50" x2="19" y2="57"/><line x1="32" y1="50" x2="29" y2="57"/><line x1="42" y1="50" x2="39" y2="57"/></g>`;
+  let body;
+  if (code===0||code===1) body = sun;
+  else if (code===2) body = sun.replace(/cx="32" cy="32"/,'cx="26" cy="26"') + cloud(6,8);
+  else if (code===3||code===45||code===48) body = cloud(2,2,'#AEB8C2') + cloud(10,10,'#C9D1D9');
+  else if (code>=51&&code<=67 || code>=80&&code<=82) body = cloud(4,-2) + drops;
+  else if (code>=71&&code<=86) body = cloud(4,-2) + `<g fill="#6FA8DC">${[22,32,42].map(x=>`<circle cx="${x}" cy="54" r="2.5"/>`).join('')}</g>`;
+  else if (code>=95) body = cloud(4,-2,'#8C98A4') + `<polyline points="34,46 28,56 34,56 30,64" fill="none" stroke="#F28C00" stroke-width="3" stroke-linejoin="round"/>`;
+  else body = cloud(4,4);
+  return `<svg viewBox="0 0 64 64" aria-hidden="true">${body}</svg>`;
+}
+const windDir = d => { if(d==null) return '—'; const s=['N','NNE','NE','ENE','E','ESE','SE','SSE','S','SSV','SV','VSV','V','VNV','NV','NNV']; return s[Math.round(d/22.5)%16]; };
+const wxOf = date => (date && D.meteo && D.meteo[date]) || null;
+function wxPanel(date){
+  const w = wxOf(date);
+  if (!date) return `<div class="panel" style="margin-top:16px"><h3>Condiții meteo în ziua execuției <span class="n">—</span></h3><div class="in"><p class="probe-empty" style="margin:0">Data execuției nu este consemnată în fișa forajului; condițiile meteo nu pot fi asociate. CPT-ul turbinei (dacă există) are data în antetul fișierului Geo-Explorer.</p></div></div>`;
+  return `<div class="panel" style="margin-top:16px"><h3>Condiții meteo în ziua execuției <span class="n">${fmtDate(date)}</span></h3><div class="in">
+    ${w ? `<div class="wx-card">${wxIcon(w.weather_code)}<div><div class="big">${n1(w.temperature_2m_min)} … ${n1(w.temperature_2m_max)} °C</div><div class="desc">${WMO[w.weather_code]||'—'}</div></div></div>
+    <div class="wx-grid">
+      <div>Temp. medie<b>${n1(w.temperature_2m_mean)} °C</b></div>
+      <div>Precipitații<b>${n1(w.precipitation_sum)} mm</b></div>
+      <div>Vânt max.<b>${n1(w.wind_speed_10m_max)} km/h ${windDir(w.wind_direction_10m_dominant)}</b></div>
+      <div>Rafale<b>${n1(w.wind_gusts_10m_max)} km/h</b></div>
+      <div>Umiditate<b>${w.relative_humidity_2m_mean!=null?Math.round(w.relative_humidity_2m_mean)+' %':'—'}</b></div>
+      <div>Soare<b>${w.sunshine_duration!=null?(w.sunshine_duration/3600).toFixed(1).replace('.',',')+' h':'—'}</b></div>
+    </div><div class="src">Sursă: ${esc(D.meteo._meta.sursa)} · punct de grilă ${D.meteo._meta.lat}°N, ${D.meteo._meta.lon}°E (alt. ${D.meteo._meta.elevatie_m} m)</div>`
+    : `<p class="probe-empty">Date meteo indisponibile pentru această zi.</p>`}
+  </div></div>`;
+}
+
+/* ---- distanță între două puncte WGS84 (m) ---- */
+function dist(a,b,c,d){ if([a,b,c,d].some(v=>v==null)) return null; const R=6371000,t=Math.PI/180; const dl=(c-a)*t, dn=(d-b)*t; const h=Math.sin(dl/2)**2+Math.cos(a*t)*Math.cos(c*t)*Math.sin(dn/2)**2; return 2*R*Math.asin(Math.sqrt(h)); }
+const cptOf = i => CPT.filter(t=>t.turbina===i.id);
+const forOf = t => INV.find(i=>i.id===t.turbina) || null;
+const nearFor = (i,r=1500) => INV.filter(x=>x!==i).map(x=>({i:x,d:dist(i.lat,i.lon,x.lat,x.lon)})).filter(x=>x.d!=null&&x.d<=r).sort((a,b)=>a.d-b.d);
+
+/* ============================ HOME ============================ */
+function renderHome(){
+  const P = D.proiect;
+  document.getElementById('h-title').textContent = P.titlu;
+  const pc = P.perioada_cpt;
+  document.getElementById('h-sub').textContent = `${P.tip_lucrari}. CPT: ${fmtDate(pc&&pc.de_la)} – ${fmtDate(pc&&pc.pana_la)} (forajele fără dată în fișe). ${P.amplasament}. Beneficiar: ${P.beneficiar}; antreprenor: ${P.antreprenor}.`;
+  document.getElementById('f-exec').textContent = `Executant: ${P.executant}`;
+  document.getElementById('f-gen').textContent = `Generat: ${fmtDate(P.generat)}`;
+  const ml = INV.reduce((s,i)=>s+(+i.adancime||0),0), mlc = CPT.reduce((s,t)=>s+(+t.adancime||0),0);
+  const nUS = LAB.filter(p=>p.netulburata).length, nSPT = INV.reduce((s,i)=>s+i.spt.length,0);
+  const planB = D.stadiu.reduce((s,z)=>s+z.foraje.proiectate,0), planC = D.stadiu.reduce((s,z)=>s+z.cptu.proiectate,0);
+  document.getElementById('stats').innerHTML = [
+    [INV.length + `<small> / ${planB}</small>`,'foraje geotehnice'],[new Set(CPT.map(t=>t.turbina)).size + `<small> / ${planC}</small>`,'turbine cu CPT'],
+    [ml.toFixed(0)+' m','metri forați'],[mlc.toFixed(0)+' m','metri CPT'],
+    [LAB.length + `<small> (${nUS} US)</small>`,'probe laborator'],[nSPT,'încercări SPT'],
+  ].map(([v,l])=>`<div class="stat"><b>${v}</b><span>${l}</span></div>`).join('') ;
+  renderStadiu();
+  document.getElementById('cnt').textContent = `${INV.length} foraje · ${ml.toFixed(0)} m · ${LAB.length} probe`;
+  document.getElementById('cpt-cnt').textContent = `${CPT.length} teste · ${mlc.toFixed(0)} m · ${new Set(CPT.map(t=>t.turbina)).size} turbine`;
+  renderZonaGal();
+  renderGrid(); renderCPTGrid(); renderLab(); renderDays(); renderTable(); renderTableCPT(); initMap();
+}
+
+function renderStadiu(){
+  const el = document.getElementById('stadiu'); if(!el || !D.stadiu) return;
+  const bar = (x, or) => { const pct = x.proiectate ? Math.round(100*x.executate/x.proiectate) : 0; return `<div class="bar"><i class="${or?'or':''}" style="width:${pct}%"></i></div><div class="pp">${pct}% executat${x.neexecutate.length?` · neexecutate: ${x.neexecutate.join(', ')}`:' · campanie încheiată'}</div>`; };
+  el.innerHTML = D.stadiu.map(z => `<div class="zone ${z.zona==='S'?'s':''}"><h3>${esc(z.nume)}</h3>
+      <div class="pl"><b>Foraje geotehnice + SPT</b><span class="mono">${z.foraje.executate} / ${z.foraje.proiectate}</span></div>${bar(z.foraje,false)}
+      <div class="pl"><b>Turbine cu CPT</b><span class="mono">${z.cptu.executate} / ${z.cptu.proiectate}</span></div>${bar(z.cptu,true)}
+      <div class="kpis"><div>metri forați<b>${n0(z.m_foraj)} m</b></div><div>metri CPT (${z.cptu.teste} teste)<b>${n0(z.m_cpt)} m</b></div><div>probe încercate<b>${z.probe}<small style="font-size:12px;color:var(--ink-3)"> (${z.probe_us} US)</small></b></div></div></div>`).join('');
+}
+
+let filt='all', q='';
+function visible(){
+  return INV.filter(i => (filt==='all' || (filt==='apa' ? hasWater(i) : filt==='statii' ? isStatie(i) : (i.zona===filt && !isStatie(i))))
+    && (!q || (i.id+' '+i.amplasare+' '+i.straturi.map(s=>s.descriere).join(' ')+' '+(i.apa||'')+' '+(i.pietris||'')).toLowerCase().includes(q)));
+}
+function lithoBar(i, vertical){
+  const dep = Math.max(+i.adancime||40, ...i.straturi.map(s=>s.la||0));
+  return i.straturi.map(s=>`<i style="${vertical?'height':'width'}:${((s.la??dep)-s.de)/dep*100}%;background:${litho(s.descriere).c}" title="${esc(s.de+'–'+s.la+' m: '+s.descriere)}"></i>`).join('');
+}
+function sptSpark(i){
+  // N_SPT pe adâncime (bare orizontale), aceeași scară verticală ca bara litologică
+  const dep = Math.max(+i.adancime||40, ...i.straturi.map(s=>s.la||0)); if(!i.spt.length) return '';
+  const W=100,H=100,nmax=50;
+  return `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">${i.spt.map(s=>`<rect x="0" y="${(s.de/dep*H).toFixed(1)}" width="${Math.min(W,s.N/nmax*W).toFixed(1)}" height="${Math.max(2.4,0.45/dep*H)}" fill="#0069B4" opacity=".8"><title>SPT ${n1(s.de)} m: N = ${s.N}</title></rect>`).join('')}</svg>`;
+}
+function renderGrid(){
+  const list = visible();
+  document.getElementById('grid').innerHTML = list.map(i => {
+    const img = i.poze[0] ? `<div class="img"><img loading="lazy" src="${i.poze[0].thumb}" alt=""><span class="tag">${i.id}</span><span class="cnt">${i.poze.length} foto</span></div>`
+      : `<div class="img"><div class="strata v">${lithoBar(i,true)}</div><div class="spark">${sptSpark(i)}</div><span class="tag">${i.id}</span><span class="cnt">N<sub>SPT</sub> · ${i.spt.length} încercări</span></div>`;
+    const nt = i.lab.filter(p=>p.netulburata).length;
+    return `<a class="card ${i.poze[0]?'':'fc'}" href="#/i/${i.id}">${img}
+      <div class="body"><div class="t">${isStatie(i)?esc(i.amplasare):i.eticheta.replace('Foraj geotehnic ','Foraj ')} ${zoneTag(i.zona)}</div>
+      <div class="m"><span>${i.data?fmtDate(i.data):'dată necompletată'}</span><span>${n1(i.adancime)} m · ${i.lab.length} probe${nt?` (${nt} US)`:''}</span></div>
+      <div class="strata">${lithoBar(i,false)}</div>
+      <div class="w ${hasWater(i)?'has':''}">${esc(waterTxt(i))}${i.cpt_ids.length?` · CPT ${i.cpt_ids.join(', ')}`:' · fără CPT'}</div></div></a>`;
+  }).join('') || `<p class="probe-empty">Nicio investigație nu corespunde filtrului.</p>`;
+}
+
+/* ---- galerii foto ---- */
+function galHTML(i, cptId){
+  if (!i.poze || !i.poze.length) return '';
+  const days = [...new Set(i.poze.map(p=>p.data).filter(Boolean))].map(fmtDate).join(', ');
+  return `<section class="block" style="border:0"><div class="sec-h"><h2>Fotografii de teren – ${esc(i.id)}</h2><span class="n">${i.poze.length} imagini · campania CPT${days?' · '+days:''}${cptId?'':' · <a href="#/cpt/'+esc(i.cpt_ids[0]||'')+'">CPT '+esc(i.cpt_ids[0]||'')+'</a>'}</span></div>
+      <div class="gal" id="gal">${i.poze.map((p,k)=>`<a href="${p.src}" class="${p.w>p.h?'land':''}" data-k="${k}"><img loading="lazy" src="${p.thumb}" alt="${i.id} foto ${k+1}"><span class="cap">${p.timestamp||i.id} · ${k+1}/${i.poze.length}</span></a>`).join('')}</div></section>`;
+}
+function renderZonaGal(){
+  const g = D.galerie_zona; const sec = document.getElementById('galerie'); if(!g || !g.poze || !g.poze.length){ return; }
+  sec.style.display = '';
+  const days = [...new Set(g.poze.map(p=>p.data).filter(Boolean))].map(fmtDate).join(', ');
+  document.getElementById('gal-zona-n').textContent = `${g.titlu} · ${g.poze.length} imagini${days?' · '+days:''}`;
+  document.getElementById('gal-zona').innerHTML = g.poze.map((p,k)=>`<a href="${p.src}" class="${p.w>p.h?'land':''}" data-k="${k}"><img loading="lazy" src="${p.thumb}" alt="zonă foto ${k+1}"><span class="cap">${p.timestamp||''} · ${k+1}/${g.poze.length}</span></a>`).join('');
+  const imgs = g.poze.map(p=>({src:p.src,cap:`${g.titlu} · ${p.original}`}));
+  document.querySelectorAll('#gal-zona a').forEach(a => a.onclick = e => { e.preventDefault(); openLB(imgs, +a.dataset.k); });
+}
+
+/* ---- CPT: carduri grupate pe turbine ---- */
+let cfilt='all';
+function sbtBar(t, vertical){
+  const dep = t.adancime||30;
+  return t.straturi_sbt.map(s=>`<i style="${vertical?'height':'width'}:${(s.la-s.de)/dep*100}%;background:${s.culoare}" title="${s.de}–${s.la} m: ${esc(s.sbt)}"></i>`).join('');
+}
+function sparkSVG(t){
+  const b = t.benzi_1m || []; if(!b.length) return '';
+  const qmax = Math.max(20, ...b.map(x=>x.qc_max));
+  const W=100, H=100, n=Math.max(b.length, Math.ceil(t.adancime));
+  return `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">${b.map((x,k)=>`<rect x="0" y="${k*H/n}" width="${Math.min(W, x.qc_med/qmax*W)}" height="${Math.max(0.6,H/n-0.6)}" fill="#F28C00" opacity=".85"/>`).join('')}</svg>`;
+}
+function cptCard(t){
+  return `<a class="card cptc" href="#/cpt/${t.id}">
+      <div class="img"><div class="strata v">${sbtBar(t,true)}</div><div class="spark">${sparkSVG(t)}</div><span class="tag ${t.tip==='CPTu'?'cptu':'cpt'}">${t.id}</span></div>
+      <div class="body"><div class="t">${t.tip} ${esc(t.id)} ${zoneTag(t.zona)}</div>
+      <div class="m"><span>${fmtDate(t.data)}</span><span>${n2(t.adancime)} m</span></div>
+      <div class="w">q<sub>c</sub> mediu ${n2(t.qc_med)} MPa · max ${n1(t.qc_max)} MPa${t.manual?' · citiri manuale':''}${t.adancime<20?' · <span style="color:#9a5a00">oprit</span>':''}</div></div></a>`;
+}
+function renderCPTGrid(){
+  const list = CPT.filter(t => cfilt==='all' || (cfilt==='scurte' ? t.adancime<20 : t.zona===cfilt));
+  const groups = [];
+  list.forEach(t => { let g = groups.find(x=>x.turb===t.turbina); if(!g){ g={turb:t.turbina, grup:t.grup, zona:t.zona, teste:[]}; groups.push(g);} g.teste.push(t); });
+  document.getElementById('cpt-groups').innerHTML = groups.map(g => {
+    const f = INV.find(i=>i.id===g.turb); const ml = g.teste.reduce((s,t)=>s+t.adancime,0);
+    return `<div class="turb"><h3>Turbina ${esc(g.turb)} ${zoneTag(g.zona)}</h3><span class="n">${g.teste.length} ${g.teste.length>1?'teste':'test'} · ${ml.toFixed(1).replace('.',',')} m · ${[...new Set(g.teste.map(t=>fmtDate(t.data)))].join(', ')}</span>${f?`<a class="fl" href="#/i/${f.id}">Foraj ${f.id} →</a>`:''}</div>
+      <div class="cpt-grid">${g.teste.map(cptCard).join('')}</div>`;
+  }).join('') || `<p class="probe-empty">Niciun test nu corespunde filtrului.</p>`;
+  const M = D.cpt||{};
+  document.getElementById('cpt-intro').innerHTML = `${M.nr||CPT.length} penetrări statice executate ${fmtDate((M.perioada||{}).de_la)} – ${fmtDate((M.perioada||{}).pana_la)} cu ${esc(M.echipament||'')}, câte una în centrul fiecărei turbine (WT35 are două: poziția din plan și locația nouă; WT5 – citiri manuale; WT54 neexecutat). Clasificarea SBT (bara verticală) după Robertson, indicativă; mini-profilul = q<sub>c</sub> mediu pe benzi de 1 m. Testele oprite sub 20 m au întâlnit refuz (șist verde / nisip îndesat). Click pentru diagramele complete.`;
+  if (M.sbt) document.getElementById('sbt-leg').innerHTML = Object.keys(M.sbt).filter(k=>k>=2&&k<=7).map(k=>`<span><i style="background:${M.sbt_culori[k]}"></i>${k} – ${esc(M.sbt[k])}</span>`).join('');
+}
+
+/* ---- laborator ---- */
+function casaSVG(points, opts={}){
+  const W=opts.W||420, H=opts.H||320, l=38, r=10, t=12, b=34, xmax=80, ymax=50;
+  const X=v=>l+Math.min(v,xmax)/xmax*(W-l-r), Y=v=>H-b-Math.min(v,ymax)/ymax*(H-t-b);
+  let g='';
+  for(let v=0; v<=xmax; v+=10){ g+=`<line x1="${X(v)}" y1="${t}" x2="${X(v)}" y2="${H-b}" stroke="#EDF0F3"/><text x="${X(v)}" y="${H-b+13}" font-size="9" text-anchor="middle" fill="#7B8794">${v}</text>`; }
+  for(let v=0; v<=ymax; v+=10){ g+=`<line x1="${l}" y1="${Y(v)}" x2="${W-r}" y2="${Y(v)}" stroke="#EDF0F3"/><text x="${l-5}" y="${Y(v)+3}" font-size="9" text-anchor="end" fill="#7B8794">${v}</text>`; }
+  [35,50].forEach(v=>{ g+=`<line x1="${X(v)}" y1="${t}" x2="${X(v)}" y2="${H-b}" stroke="#B8C2CC" stroke-dasharray="3 3"/>`; });
+  g+=`<line x1="${X(20)}" y1="${Y(0)}" x2="${X(xmax)}" y2="${Y(0.73*(xmax-20))}" stroke="#0A2F4F" stroke-width="1.4"/><text x="${X(77)}" y="${Y(0.73*57)+13}" font-size="9.5" text-anchor="end" fill="#0A2F4F" font-weight="600">linia A</text>`;
+  g+=`<line x1="${X(8)}" y1="${Y(0)}" x2="${X(8+ymax/0.9)}" y2="${Y(ymax)}" stroke="#7B8794" stroke-dasharray="5 3"/><text x="${X(8+ymax/0.9)-4}" y="${Y(ymax)+10}" font-size="9" text-anchor="end" fill="#7B8794">linia U</text>`;
+  [['L',22],['I',42],['H',62]].forEach(([s,v])=>{ g+=`<text x="${X(v)}" y="${t+11}" font-size="9" text-anchor="middle" fill="#7B8794">${s}</text>`; });
+  g+=`<rect x="${l}" y="${t}" width="${W-l-r}" height="${H-t-b}" fill="none" stroke="#D9DFE5"/>`;
+  g+=`<text x="${(l+W-r)/2}" y="${H-4}" font-size="10" text-anchor="middle" fill="#4A5560">limita de curgere w<tspan baseline-shift="sub" font-size="7">L</tspan> [%]</text><text x="10" y="${(t+H-b)/2}" font-size="10" text-anchor="middle" fill="#4A5560" transform="rotate(-90 10 ${(t+H-b)/2})">indicele de plasticitate I<tspan baseline-shift="sub" font-size="7">P</tspan> [%]</text>`;
+  points.forEach(p => { if(p.wL==null||p.IP==null) return; const rr = opts.big&&p.big?5.5:3.8, cx=X(p.wL), cy=Y(p.IP);
+    g += p.us ? `<rect x="${cx-rr}" y="${cy-rr}" width="${2*rr}" height="${2*rr}" transform="rotate(45 ${cx} ${cy})" fill="${p.c}" fill-opacity="${p.dim?.2:.85}" stroke="#fff" stroke-width="1"><title>${esc(p.t)}</title></rect>`
+      : `<circle cx="${cx}" cy="${cy}" r="${rr}" fill="${p.c}" fill-opacity="${p.dim?.2:.75}" stroke="#fff" stroke-width="1"><title>${esc(p.t)}</title></circle>`; });
+  return `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">${g}</svg>`;
+}
+const labCols = [
+  ['Foraj',p=>`<a href="#/i/${p.foraj}"><b>${p.foraj}</b></a>`, p=>p.foraj],
+  ['Proba',p=>p.proba,p=>p.proba],['Ad. [m]',p=>p.interval?esc(p.interval):n1(p.adancime),p=>p.interval||p.adancime],
+  ['Tip',p=>p.netulburata?'<span class="nt">US</span>':'<span class="nt tu">DS</span>',p=>p.netulburata?'US':'DS'],
+  ['Descriere (fișă)',p=>esc(p.denumire||'—'),p=>p.denumire||''],
+  ['A/P/N/G [%]',p=>p.A!=null?`${n0(p.A)}/${n0(p.P)}/${n0(p.N)}/${n0(p.G)}`:'—',p=>p.A!=null?`${p.A}/${p.P}/${p.N}/${p.G}`:''],
+  ['w [%]',p=>n1(p.w),p=>p.w],['w<sub>L</sub> [%]',p=>n1(p.wL),p=>p.wL],['w<sub>P</sub> [%]',p=>n1(p.wP),p=>p.wP],['I<sub>P</sub> [%]',p=>n1(p.IP),p=>p.IP],
+  ['I<sub>C</sub>',p=>n2(p.IC),p=>p.IC],['γ [kN/m³]',p=>n2(p.gama),p=>p.gama],['γ<sub>d</sub> [kN/m³]',p=>n2(p.gama_d),p=>p.gama_d],['n [%]',p=>n1(p.n),p=>p.n],['e',p=>n2(p.e),p=>p.e],['S<sub>r</sub>',p=>n2(p.Sr),p=>p.Sr],
+  ['M<sub>2-3</sub> [kPa]',p=>p.M23!=null?n0(p.M23):'—',p=>p.M23],['ε<sub>p2</sub> [%]',p=>n2(p.ep2),p=>p.ep2],
+  ['i<sub>m3</sub> [%]',p=>n2(p.im3),p=>p.im3],['φ′ [°]',p=>n1(p.phi),p=>p.phi],['c′ [kPa]',p=>n1(p.c),p=>p.c],
+];
+const labHead = cols => `<thead><tr>${cols.map(c=>`<th>${c[0]}</th>`).join('')}</tr></thead>`;
+let lfilt='all', lsel='';
+function labList(){ return LAB.filter(p => (lfilt==='all' || (lfilt==='US' ? p.netulburata : p.zona===lfilt)) && (!lsel || p.foraj===lsel)); }
+function renderLab(){
+  const nUS = LAB.filter(p=>p.netulburata).length;
+  const list = labList();
+  document.getElementById('lab-cnt').textContent = `${LAB.length} probe · ${nUS} netulburate (US) · ${INV.filter(i=>i.lab.length).length} foraje · afișate: ${list.length}`;
+  document.getElementById('lab-intro').innerHTML = `Rezultatele încercărilor de laborator (laboratorul GEO-TECH SRL) pe probele prelevate din foraje, transcrise 1:1 din fișele formatate ale forajelor. US = probă netulburată, DS = probă tulburată; A/P/N/G = argilă / praf / nisip / pietriș; M<sub>2-3</sub> = modulul edometric, ε<sub>p2</sub> = tasarea specifică la 200 kPa, i<sub>m3</sub> = tasarea specifică suplimentară la umezire sub 300 kPa (pământuri sensibile la umezire). În diagrama Casagrande: romb = probă netulburată, cerc = probă tulburată; culoarea = zona (albastru N, portocaliu S).`;
+  const sel = document.getElementById('lab-sel');
+  if (sel.options.length === 1) INV.forEach(i => { if(i.lab.length){ const o=document.createElement('option'); o.value=i.id; o.textContent=`${i.id} (${i.lab.length})`; sel.appendChild(o);} });
+  const ids = new Set(list);
+  document.getElementById('casa').innerHTML = casaSVG(LAB.map(p=>({wL:p.wL,IP:p.IP,us:p.netulburata,c:ZCOL[p.zona],dim:!ids.has(p),t:`${p.foraj} ${p.proba} · ${n1(p.adancime)} m · wL ${n1(p.wL)} %, IP ${n1(p.IP)} %, IC ${n2(p.IC)}`})).sort((a,b)=>(a.dim===b.dim?0:a.dim?-1:1)))
+    + `<div class="fleg"><span><i style="background:${ZCOL.N}"></i>zona N (WT1–WT23)</span><span><i style="background:${ZCOL.S}"></i>zona S (WT24–WT56)</span><span><i class="dia" style="background:#4A5560"></i>netulburată (US)</span><span><i style="background:#4A5560"></i>tulburată (DS)</span></div>`;
+  document.getElementById('tbl-lab').innerHTML = labHead(labCols) + `<tbody>${list.map(p=>`<tr>${labCols.map((c,k)=>`<td class="${k>4||k==2?'num':(k==4?'desc':'')}">${c[1](p)}</td>`).join('')}</tr>`).join('')}</tbody>`;
+}
+
+function renderDays(){
+  const byDay = {};
+  CPT.forEach(t => (byDay[t.data] ||= []).push({id:t.id,cls:'cpt',ad:+t.adancime||0,href:'#/cpt/'+t.id}));
+  const dates = Object.keys(byDay).sort();
+  const nod = INV.filter(i=>!i.data);
+  document.getElementById('days').innerHTML = `<div class="campaign">Campania CPT<span class="n">${dates.length} zile · ${CPT.length} teste</span></div><div class="days">` + dates.map(d => {
+    const w = wxOf(d);
+    const wx = w ? `<div class="wx">${wxIcon(w.weather_code)}<div><b>${n1(w.temperature_2m_min)} … ${n1(w.temperature_2m_max)} °C</b><br>${WMO[w.weather_code]||'—'} · ${n1(w.precipitation_sum)} mm · vânt ${windDir(w.wind_direction_10m_dominant)} ${n1(w.wind_speed_10m_max)} km/h</div></div>` : `<div class="wx">meteo indisponibil</div>`;
+    const ids = byDay[d].sort((a,b)=>numSort(a.id,b.id)).map(x=>`<a class="${x.cls}" href="${x.href}">${x.id.replace('CPT-','')}</a>`).join('');
+    const turbs = [...new Set(byDay[d].map(x=>(CPT.find(t=>t.id===x.id)||{}).turbina))].join(', ');
+    return `<div class="day"><div class="d">${fmtDateL(d)}</div>${wx}<div style="font-size:12.5px;color:var(--ink-3)">${byDay[d].length} CPT · ${byDay[d].reduce((s,x)=>s+x.ad,0).toFixed(1).replace('.',',')} m</div><div class="ids">${ids}</div></div>`;
+  }).join('') + (nod.length ? `<div class="day nodate"><div class="d">Foraje geotehnice – dată necompletată</div><div class="wx">Fișele forajelor (${nod.length}) nu consemnează data execuției; forajele s-au executat în aceeași perioadă (oct.–dec. 2025) cu CPT-urile. Meteo nu poate fi asociat.</div><div class="ids">${nod.map(i=>`<a class="fc" href="#/i/${i.id}">${i.id}</a>`).join('')}</div></div>` : '') + '</div>';
+  const m = D.meteo && D.meteo._meta;
+  document.getElementById('wx-src').textContent = m ? `sursă meteo: ${m.sursa}, grilă ${m.lat}°N ${m.lon}°E, alt. ${m.elevatie_m} m` : '';
+}
+
+function renderTable(){
+  const rows = INV.map(i => `<tr>
+      <td><a href="#/i/${i.id}"><b>${i.id}</b></a></td><td>${esc(i.zona)}</td><td>${esc(i.amplasare)}</td>
+      <td class="num">${i.data?fmtDate(i.data):'—'}</td><td class="num">${n2(i.adancime)}${i.adancime_proiectata?` <span style="color:var(--ink-3)">/ ${n0(i.adancime_proiectata)}</span>`:''}</td>
+      <td class="num">${n1(i.cota)}</td>
+      <td class="num">${i.stereo70?i.stereo70.E.toFixed(2):'—'}</td><td class="num">${i.stereo70?i.stereo70.N.toFixed(2):'—'}</td>
+      <td class="num">${i.lat!=null?i.lat.toFixed(6):'—'}</td><td class="num">${i.lon!=null?i.lon.toFixed(6):'—'}</td>
+      <td>${esc(waterTxt(i))}</td>
+      <td class="num">${i.straturi.length}</td><td class="num">${i.lab.filter(p=>p.netulburata).length} / ${i.lab.length}</td><td class="num">${i.spt.length}</td><td>${i.cpt_ids.map(c=>`<a href="#/cpt/${c}">${c}</a>`).join(', ')||'—'}</td></tr>`).join('');
+  document.getElementById('tbl').innerHTML = `<thead><tr><th>ID</th><th>Zona</th><th>Amplasare</th><th>Data</th><th>Ad. exec./proi. [m]</th><th>Cotă teren [m RNMN]</th><th>X (E) Stereo70</th><th>Y (N) Stereo70</th><th>Lat</th><th>Lon</th><th>Apă subterană</th><th>Straturi</th><th>Probe US / total</th><th>SPT</th><th>CPT</th></tr></thead><tbody>${rows}</tbody>`;
+}
+function renderTableCPT(){
+  const rows = CPT.map(t => `<tr>
+      <td><a href="#/cpt/${t.id}"><b>${t.id}</b></a></td><td>${t.tip}</td><td>${esc(t.zona)}</td><td><a href="#/i/${t.turbina}">${esc(t.turbina)}</a></td>
+      <td class="num">${fmtDate(t.data)}</td><td class="num">${n2(t.adancime)}</td>
+      <td class="num">${t.lat!=null?t.lat.toFixed(6):'—'}</td><td class="num">${t.lon!=null?t.lon.toFixed(6):'—'}</td>
+      <td class="num">${t.stereo70?t.stereo70.E.toFixed(2):'—'}</td><td class="num">${t.stereo70?t.stereo70.N.toFixed(2):'—'}</td>
+      <td class="num">${n2(t.qc_med)}</td><td class="num">${n1(t.qc_max)}</td><td>${esc(t.coord_sursa||'')}</td></tr>`).join('');
+  document.getElementById('tbl-cpt').innerHTML = `<thead><tr><th>ID</th><th>Tip</th><th>Zona</th><th>Turbină / foraj</th><th>Data</th><th>Ad. [m]</th><th>Lat</th><th>Lon</th><th>X (E) Stereo70</th><th>Y (N) Stereo70</th><th>q<sub>c</sub> mediu [MPa]</th><th>q<sub>c</sub> max [MPa]</th><th>Sursă poziție</th></tr></thead><tbody>${rows}</tbody>`;
+}
+function dlCSV(rows, name){
+  const csv = rows.map(r=>r.map(v=>`"${String(v??'').replace(/"/g,'""')}"`).join(';')).join('\r\n');
+  const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob(['﻿'+csv],{type:'text/csv;charset=utf-8'})); a.download = name; a.click();
+}
+const csvNum = v => (typeof v==='number' ? String(+v.toFixed(4)).replace('.',',') : (v??''));
+function exportCSV(){
+  const h = ['ID','Zona','Amplasare','Data','Adancime_m','Adancime_proiectata_m','Cota_teren_mRNMN','X_E_Stereo70','Y_N_Stereo70','Lat','Lon','Apa','NA_m','Nr_straturi','Stratificatie','Probe_lab','Nr_SPT','CPT','Observatii'];
+  const rows = INV.map(i => [i.id,i.zona,i.amplasare,i.data?fmtDate(i.data):'',i.adancime,i.adancime_proiectata??'',i.cota,i.stereo70?i.stereo70.E:'',i.stereo70?i.stereo70.N:'',i.lat,i.lon,i.apa||'',i.NH??'',i.straturi.length,i.straturi.map(s=>`${s.de}-${s.la??''} m: ${s.descriere}`).join(' | '),i.lab.map(p=>`${p.proba} ${p.adancime} m`).join(' | '),i.spt.length,i.cpt_ids.join(' | '),i.nota_data||'']);
+  dlCSV([h,...rows],'centralizator_foraje_daeni.csv');
+}
+function exportCSVcpt(){
+  const h = ['ID','Tip','Zona','Turbina','Data','Adancime_m','Lat','Lon','X_E_Stereo70','Y_N_Stereo70','qc_mediu_MPa','qc_max_MPa','NA_presupus_m','Straturi_SBT','Sursa_pozitie','Observatii'];
+  const rows = CPT.map(t => [t.id,t.tip,t.zona,t.turbina,fmtDate(t.data),t.adancime,t.lat,t.lon,t.stereo70?t.stereo70.E:'',t.stereo70?t.stereo70.N:'',t.qc_med,t.qc_max,t.gwl??'',t.straturi_sbt.map(s=>`${s.de}-${s.la} m: ${s.sbt}`).join(' | '),t.coord_sursa,t.nota||'']);
+  dlCSV([h,...rows],'centralizator_cpt_daeni.csv');
+}
+function exportCSVlab(){
+  const keys = ['zona','foraj','proba','tip','interval','adancime','denumire','A','P','N','G','B','w','wL','wP','IP','IC','gama','gama_d','n','e','Sr','M23','ep2','im3','phi','c'];
+  dlCSV([keys, ...labList().map(p=>keys.map(k=>csvNum(p[k])))],'centralizator_laborator_daeni.csv');
+}
+function exportCSVspt(){
+  const rows = INV.flatMap(i=>i.spt.map(s=>[i.zona,i.id,csvNum(s.de),csvNum(s.la),s.valori,s.N]));
+  dlCSV([['Zona','Foraj','De_la_m','Pana_la_m','Valori_15_15_15','N_SPT'],...rows],'centralizator_spt_daeni.csv');
+}
+
+/* ============================ MAP ============================ */
+function cptIcon(t, size=11){
+  return L.divIcon({className:'', iconSize:[size,size], iconAnchor:[size/2,size/2], html:`<div style="width:${size}px;height:${size}px;background:#F28C00;border:2px solid #0A2F4F;box-shadow:0 0 0 1px rgba(255,255,255,.8);transform:rotate(45deg)"></div>`});
+}
+const cptTips = [];
+function initMap(){
+  if (map) return;
+  if (typeof L === 'undefined'){ document.getElementById('map').innerHTML = '<p style="padding:20px;color:var(--ink-3)">Harta nu a putut fi încărcată (biblioteca Leaflet indisponibilă – verifică conexiunea la internet).</p>'; return; }
+  map = L.map('map', {scrollWheelZoom:false, zoomSnap:0.25});
+  baseOSM = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© OpenStreetMap'});
+  baseSat = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',{maxZoom:19,attribution:'Esri'});
+  baseOSM.addTo(map);
+  const style = document.createElement('style'); style.textContent = '.lbl{background:rgba(255,255,255,.85);border:0;box-shadow:none;font-family:var(--cond);font-size:13px;font-weight:600;padding:1px 5px;color:#0A2F4F}.lbl::before{display:none}.lbl.cptl{font-family:var(--mono);font-size:10px;font-weight:500;color:#9a5a00;background:rgba(255,255,255,.75)}'; document.head.appendChild(style);
+  const b = [];
+  (D.cpt_neexecutate||[]).forEach(p => {
+    L.circleMarker([p.lat,p.lon],{radius:4,color:'#fff',weight:1,fillColor:'#9AA5B1',fillOpacity:.95}).addTo(map)
+      .bindPopup(`<b>${esc(p.id)}</b><br>turbină fără CPT (neexecutat)`);
+  });
+  CPT.forEach(t => {
+    if (t.lat==null) return; b.push([t.lat,t.lon]);
+    const m = L.marker([t.lat,t.lon],{icon:cptIcon(t)}).addTo(map);
+    m.bindTooltip('CPT '+t.id,{permanent:false,direction:'right',offset:[6,0],className:'lbl cptl'}); cptTips.push(m);
+    m.bindPopup(`<div class="pop"><b>CPT ${t.id}</b> · turbina ${esc(t.turbina)}<br>${fmtDate(t.data)} · ${n2(t.adancime)} m · q<sub>c</sub> mediu ${n2(t.qc_med)} MPa<br><span style="color:var(--ink-3);font-size:11.5px">${esc(t.coord_sursa)}</span><br><a href="#/cpt/${t.id}">Deschide diagramele →</a></div>`);
+    markers[t.id] = m;
+  });
+  INV.forEach(i => {
+    if (i.lat==null) return;
+    const m = L.circleMarker([i.lat,i.lon],{radius:8,color:'#fff',weight:2,fillColor:'#0069B4',fillOpacity:1}).addTo(map);
+    // eticheta la stânga dacă un alt foraj apropiat se află la est (evită suprapunerile la scara parcului)
+    const east = INV.some(x => x!==i && x.lat!=null && x.lon>i.lon && dist(i.lat,i.lon,x.lat,x.lon)<1600 && Math.abs(x.lat-i.lat)*110540<500);
+    m.bindTooltip(i.id,{permanent:true,direction:east?'left':'right',offset:[east?-8:8,0],className:'lbl'});
+    m.bindPopup(`<div class="pop"><b>${i.eticheta}</b> · zona ${i.zona}<br>${n2(i.adancime)} m · cota ${n1(i.cota)} m · ${i.lab.length} probe · ${i.spt.length} SPT<br>${esc(waterTxt(i))}${i.cpt_ids.length?`<br>CPT: ${i.cpt_ids.join(', ')}`:'<br>fără CPT'}<br><a href="#/i/${i.id}">Deschide fișa →</a></div>`);
+    markers[i.id] = m; b.push([i.lat,i.lon]);
+  });
+  const updTips = () => { const on = map.getZoom() >= 15; cptTips.forEach(m => { const tt = m.getTooltip(); if (tt && tt.options.permanent !== on){ m.unbindTooltip(); m.bindTooltip(tt.getContent(),{permanent:on,direction:'right',offset:[6,0],className:'lbl cptl'}); } }); };
+  map.on('zoomend', updTips);
+  if (b.length) map.fitBounds(b,{padding:[24,24]});
+  document.getElementById('btn-fit').onclick = () => map.fitBounds(b,{padding:[24,24]});
+  document.getElementById('btn-sat').onclick = e => { satOn=!satOn; map.removeLayer(satOn?baseOSM:baseSat); (satOn?baseSat:baseOSM).addTo(map); e.target.textContent = satOn?'Hartă':'Satelit'; };
+}
+function miniMap(el, lat, lon, color, zoom=17){
+  if (!el || lat==null || typeof L === 'undefined') return;
+  const m2 = L.map(el,{scrollWheelZoom:false,zoomControl:true,attributionControl:false});
+  L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',{maxZoom:19}).addTo(m2);
+  (D.cpt_neexecutate||[]).forEach(p => L.circleMarker([p.lat,p.lon],{radius:4,color:'#fff',weight:1,fillColor:'#9AA5B1',fillOpacity:.9}).addTo(m2).bindTooltip(p.id+' (neexecutat)'));
+  CPT.forEach(t => { if (t.lat!=null) L.marker([t.lat,t.lon],{icon:cptIcon(t,9),opacity:.9}).addTo(m2).bindTooltip('CPT '+t.id,{permanent:true,direction:'right',offset:[5,0],className:'lbl cptl'}); });
+  INV.forEach(i => { if (i.lat!=null) L.circleMarker([i.lat,i.lon],{radius:5,color:'#fff',weight:1,fillColor:'#0069B4',fillOpacity:.9}).addTo(m2).bindTooltip(i.id,{permanent:true,direction:'right',offset:[6,0],className:'lbl'}); });
+  L.circleMarker([lat,lon],{radius:9,color:'#fff',weight:2,fillColor:color,fillOpacity:1}).addTo(m2);
+  m2.setView([lat,lon],zoom);
+}
+
+/* ============================ DETAIL FORAJ ============================ */
+const H0=760, TOP=14;
+function logSVG(i, dep){
+  const W=232, top=TOP, H=H0, sc=H/dep, x0=44, cw=56;
+  const defs = `<defs>
+    <pattern id="p-sand" width="8" height="8" patternUnits="userSpaceOnUse"><circle cx="2" cy="2" r=".9" fill="#7a6a3a"/><circle cx="6" cy="6" r=".9" fill="#7a6a3a"/></pattern>
+    <pattern id="p-gravel" width="10" height="10" patternUnits="userSpaceOnUse"><circle cx="3" cy="3" r="1.8" fill="none" stroke="#7a6a3a" stroke-width=".8"/><circle cx="8" cy="7" r="1.3" fill="none" stroke="#7a6a3a" stroke-width=".8"/></pattern>
+    <pattern id="p-silt" width="10" height="6" patternUnits="userSpaceOnUse"><line x1="0" y1="3" x2="6" y2="3" stroke="#7a6a3a" stroke-width=".8"/><circle cx="8.5" cy="3" r=".8" fill="#7a6a3a"/></pattern>
+    <pattern id="p-clay" width="12" height="6" patternUnits="userSpaceOnUse"><line x1="0" y1="3" x2="9" y2="3" stroke="#5e4a2a" stroke-width=".9"/></pattern>
+    <pattern id="p-veg" width="8" height="8" patternUnits="userSpaceOnUse"><path d="M1 7l2-4 2 4M5 4l1-2 1 2" stroke="#3b2d15" stroke-width=".9" fill="none"/></pattern>
+  </defs>`;
+  let g = defs;
+  const step = dep > 25 ? 1 : 0.5;
+  for (let m=0; m<=dep+1e-9; m+=step){ const y=top+m*sc; const maj = dep>25 ? (m%5===0) : Number.isInteger(m); g += `<line x1="${x0-(maj?10:5)}" y1="${y}" x2="${x0}" y2="${y}" stroke="#4A5560" stroke-width="1"/>`; if(maj) g+=`<text x="${x0-12}" y="${y+4}" font-size="10" text-anchor="end" fill="#4A5560">${m.toFixed(0)}</text>`; }
+  g += `<line x1="${x0}" y1="${top}" x2="${x0}" y2="${top+dep*sc}" stroke="#4A5560"/>`;
+  const bot = Math.max(...i.straturi.map(s=>s.la||0), +i.adancime||0);
+  i.straturi.forEach(s => {
+    const la = s.la ?? bot; const y=top+s.de*sc, h=(la-s.de)*sc; const Lh=litho(s.descriere);
+    g += `<rect x="${x0}" y="${y}" width="${cw}" height="${h}" fill="${Lh.c}" stroke="#4A5560" stroke-width=".8"><title>${esc(s.de+'–'+la+' m: '+s.descriere)}</title></rect>`;
+    if (Lh.p) g += `<rect x="${x0}" y="${y}" width="${cw}" height="${h}" fill="url(#p-${Lh.p})" stroke="none" pointer-events="none"/>`;
+    if (s.de===0 || (la-s.de)*sc>=11) g += `<text x="${x0+cw+8}" y="${y+3}" font-size="10" fill="#7B8794">${s.de.toFixed(2).replace('.',',')}</text>`;
+  });
+  g += `<text x="${x0+cw+8}" y="${top+bot*sc+3}" font-size="10" fill="#7B8794">${bot.toFixed(2).replace('.',',')}</text>`;
+  if (i.NH!=null){ const y=top+i.NH*sc; g += `<polygon points="${x0+cw+30},${y-9} ${x0+cw+38},${y} ${x0+cw+22},${y}" fill="#1F8FD8"/><line x1="${x0-4}" y1="${y}" x2="${x0+cw+40}" y2="${y}" stroke="#1F8FD8" stroke-width="1.5" stroke-dasharray="4 3"/><text x="${x0+cw+44}" y="${y+4}" font-size="11" fill="#1F8FD8" font-weight="600">NA ${n1(i.NH)} m</text>`; }
+  if (i.IN!=null){ const y=top+i.IN*sc; g += `<line x1="${x0-4}" y1="${y}" x2="${x0+cw+40}" y2="${y}" stroke="#1F8FD8" stroke-width="1" stroke-dasharray="2 3"/><text x="${x0+cw+44}" y="${y+4}" font-size="10.5" fill="#1F8FD8">infiltrație ${n2(i.IN)} m</text>`; }
+  i.lab.forEach(p => { const y=top+p.adancime*sc;
+    g += p.netulburata ? `<rect x="${x0-7}" y="${y-6}" width="12" height="12" fill="#F28C00" stroke="#fff" stroke-width="1.2" transform="rotate(45 ${x0-1} ${y})"><title>${p.proba} – probă netulburată ${n2(p.adancime)} m</title></rect>` : `<circle cx="${x0-1}" cy="${y}" r="4" fill="#fff" stroke="#F28C00" stroke-width="2"><title>${p.proba} – probă tulburată ${n2(p.adancime)} m</title></circle>`; });
+  g += `<text x="${x0}" y="${10}" font-size="11" fill="#0A2F4F" font-weight="600">m</text>`;
+  return `<svg class="log" viewBox="0 0 ${W} ${H+top+14}" xmlns="http://www.w3.org/2000/svg">${g}</svg>`;
+}
+/* profil de plasticitate: w (punct) și intervalul wP–wL, pe aceeași scară de adâncime */
+function plastSVG(i, dep){
+  const W=160, H=H0, top=TOP, sc=H/dep, l=10, r=10, xmax=60, X=v=>l+Math.min(v,xmax)/xmax*(W-l-r);
+  let g='';
+  for (let v=0; v<=xmax; v+=20){ g+=`<line x1="${X(v)}" y1="${top}" x2="${X(v)}" y2="${top+dep*sc}" stroke="#EDF0F3"/><text x="${X(v)}" y="${top-4}" font-size="9" text-anchor="middle" fill="#7B8794">${v}</text>`; }
+  for (let m=0; m<=dep+1e-9; m+=5){ const y=top+m*sc; g+=`<line x1="${l}" y1="${y}" x2="${W-r}" y2="${y}" stroke="#EDF0F3"/>`; }
+  i.lab.forEach(p => { const y=top+p.adancime*sc;
+    if (p.wP!=null && p.wL!=null) g+=`<line x1="${X(p.wP)}" y1="${y}" x2="${X(p.wL)}" y2="${y}" stroke="#0A2F4F" stroke-width="2"/><line x1="${X(p.wP)}" y1="${y-4}" x2="${X(p.wP)}" y2="${y+4}" stroke="#0A2F4F" stroke-width="2"/><line x1="${X(p.wL)}" y1="${y-4}" x2="${X(p.wL)}" y2="${y+4}" stroke="#0A2F4F" stroke-width="2"/>`;
+    if (p.w!=null) g+=`<circle cx="${X(p.w)}" cy="${y}" r="4" fill="#1F8FD8" stroke="#fff" stroke-width="1"><title>${p.proba} (${n1(p.adancime)} m): w ${n1(p.w)} %, wP ${n1(p.wP)} %, wL ${n1(p.wL)} %</title></circle>`;
+  });
+  g+=`<rect x="${l}" y="${top}" width="${W-l-r}" height="${dep*sc}" fill="none" stroke="#D9DFE5"/>`;
+  return `<svg viewBox="0 0 ${W} ${H+top+14}" xmlns="http://www.w3.org/2000/svg">${g}</svg>`;
+}
+/* indicele de consistență cu benzile de stare */
+function icSVG(i, dep){
+  const W=108, H=H0, top=TOP, sc=H/dep, l=8, r=8, xmax=1.25, X=v=>l+Math.max(0,Math.min(v,xmax))/xmax*(W-l-r);
+  const bands=[[0,.5,'#F6E3E1','moale'],[.5,.75,'#FBEFD9','plastic consist.'],[.75,1,'#EAF1E4','vârtos'],[1,1.25,'#E3EDF6','tare']];
+  let g='';
+  bands.forEach(([a,b,c,t])=>{ g+=`<rect x="${X(a)}" y="${top}" width="${X(b)-X(a)}" height="${dep*sc}" fill="${c}"/><text x="${(X(a)+X(b))/2+3}" y="${top+dep*sc-6}" font-size="8" fill="#7B8794" transform="rotate(-90 ${(X(a)+X(b))/2+3} ${top+dep*sc-6})">${t}</text>`; });
+  [0,.5,.75,1,1.25].forEach(v=>{ g+=`<text x="${X(v)}" y="${top-4}" font-size="8" text-anchor="middle" fill="#7B8794">${String(v).replace('.',',')}</text>`; });
+  for (let m=0; m<=dep+1e-9; m+=5){ const y=top+m*sc; g+=`<line x1="${l}" y1="${y}" x2="${W-r}" y2="${y}" stroke="#fff" stroke-opacity=".7"/>`; }
+  i.lab.forEach(p=>{ if(p.IC==null) return; const y=top+p.adancime*sc; g+=`<circle cx="${X(p.IC)}" cy="${y}" r="4" fill="#0A2F4F" stroke="#fff" stroke-width="1"><title>${p.proba}: IC = ${n2(p.IC)}</title></circle>`; });
+  g+=`<rect x="${l}" y="${top}" width="${W-l-r}" height="${dep*sc}" fill="none" stroke="#D9DFE5"/>`;
+  return `<svg viewBox="0 0 ${W} ${H+top+14}" xmlns="http://www.w3.org/2000/svg">${g}</svg>`;
+}
+/* N_SPT (lovituri / 30 cm) pe adâncime */
+function sptSVG(i, dep){
+  const W=112, H=H0, top=TOP, sc=H/dep, l=10, r=8, xmax=Math.max(40, Math.ceil(Math.max(...i.spt.map(s=>s.N))/10)*10), X=v=>l+Math.min(v,xmax)/xmax*(W-l-r);
+  let g='';
+  for (let v=0; v<=xmax; v+=xmax>40?20:10){ g+=`<line x1="${X(v)}" y1="${top}" x2="${X(v)}" y2="${top+dep*sc}" stroke="#EDF0F3"/><text x="${X(v)}" y="${top-4}" font-size="9" text-anchor="middle" fill="#7B8794">${v}</text>`; }
+  for (let m=0; m<=dep+1e-9; m+=5){ const y=top+m*sc; g+=`<line x1="${l}" y1="${y}" x2="${W-r}" y2="${y}" stroke="#EDF0F3"/>`; }
+  let d='';
+  i.spt.forEach((s,k)=>{ const y=top+(s.de+0.225)*sc, x=X(s.N); d+=(k?'L':'M')+x.toFixed(1)+','+y.toFixed(1);
+    g+=`<rect x="${l}" y="${top+s.de*sc}" width="${x-l}" height="${Math.max(2,0.45*sc)}" fill="#0069B4" opacity=".25"/>`; });
+  g+=`<path d="${d}" fill="none" stroke="#0069B4" stroke-width="1.3"/>`;
+  i.spt.forEach(s=>{ const y=top+(s.de+0.225)*sc; g+=`<circle cx="${X(s.N)}" cy="${y}" r="3.2" fill="#0069B4" stroke="#fff" stroke-width="1"><title>SPT ${n1(s.de)}–${n2(s.la)} m: ${s.valori} → N = ${s.N}</title></circle>`; });
+  g+=`<rect x="${l}" y="${top}" width="${W-l-r}" height="${dep*sc}" fill="none" stroke="#D9DFE5"/>`;
+  return `<svg viewBox="0 0 ${W} ${H+top+14}" xmlns="http://www.w3.org/2000/svg">${g}</svg>`;
+}
+
+function renderDetail(id){
+  const i = INV.find(x=>x.id===id); if(!i){ location.hash='#/'; return; }
+  const idx = INV.indexOf(i), prev = INV[idx-1], next = INV[idx+1];
+  const gmaps = i.lat!=null ? `https://www.google.com/maps?q=${i.lat},${i.lon}` : null;
+  const legend = [...new Map(i.straturi.map(s=>{const Lh=litho(s.descriere);return [Lh.k,Lh.c];})).entries()].map(([k,c])=>`<span><i style="background:${c};border-radius:2px"></i>${k}</span>`).join('');
+  const nf = nearFor(i, 1500);
+  const fise = i.fise_foto||[]; const cpts = cptOf(i);
+  const nt = i.lab.filter(p=>p.netulburata).length;
+  const dep = Math.ceil(Math.max(+i.adancime||40, ...i.straturi.map(s=>s.la||0)));
+  const detCols = labCols.slice(1);
+  const html = `
+    <a class="back" href="#/">← Înapoi la sinteză</a>
+    <div class="dhead">
+      <div><span class="type">${esc(i.categorie_kml)}</span>
+        <h1>${i.id}</h1></div>
+      <div style="color:var(--ink-2)">${esc(i.amplasare)} · ${esc(i.zona_nume)}<br><span class="mono">${D.proiect.amplasament}</span></div>
+      <div class="pn"><a class="${prev?'':'dis'}" href="#/i/${prev?prev.id:''}">‹ ${prev?prev.id:''}</a><a class="${next?'':'dis'}" href="#/i/${next?next.id:''}">${next?next.id:''} ›</a></div>
+    </div>
+    ${i.nota_data?`<div class="note ${i.dist_cpt>60?'':'info'}">${esc(i.nota_data)}</div>`:''}
+    <div class="meta">
+      <div class="kv"><span>Adâncime</span><b>${n2(i.adancime)} m</b>${i.adancime_proiectata?`<div class="sm">proiectat ${n0(i.adancime_proiectata)},00 m${i.adancime<i.adancime_proiectata-0.01?' · oprit în șist':''}</div>`:''}</div>
+      <div class="kv ${hasWater(i)?'water':''}"><span>Apă subterană</span><b>${esc(waterTxt(i))}</b><div class="sm">${esc((i.note_apa||[]).join(' · ')||'consemnare fișă')}</div></div>
+      <div class="kv"><span>Cotă teren</span><b>${n1(i.cota)} m RNMN</b><div class="sm">din antetul fișei</div></div>
+      <div class="kv"><span>Stereo 70 (fișă)</span><b class="mono">X ${i.stereo70.E.toFixed(2)} · Y ${i.stereo70.N.toFixed(2)}</b><div class="sm">X = est, Y = nord</div></div>
+      <div class="kv"><span>Poziție (WGS84)</span><b class="mono">${i.lat!=null?i.lat.toFixed(6)+', '+i.lon.toFixed(6):'—'}</b><div class="sm">${esc(i.coord_sursa)}${gmaps?` · <a href="${gmaps}" target="_blank" rel="noopener">Google Maps ↗</a>`:''}</div></div>
+      <div class="kv"><span>Probe la laborator</span><b>${nt} netulburate · ${i.lab.length-nt} tulburate</b><div class="sm">${i.spt.length} încercări SPT</div></div>
+      <div class="kv"><span>CPT al turbinei</span><b>${cpts.length?cpts.map(t=>`<a href="#/cpt/${t.id}">${t.id}</a> <span style="color:var(--ink-3);font-weight:400">${n1(t.adancime)} m · ${fmtDate(t.data)}</span>`).join(', '):'—'}</b><div class="sm">${cpts.length?'în centrul turbinei, același punct cu forajul':'CPT neexecutat'}</div></div>
+    </div>
+
+    <div class="cols wide">
+      <div class="panel"><h3 id="litho-h">Coloană litologică + laborator + SPT <span class="n">adâncimi în m</span></h3><div class="in">
+        <div class="cpt-charts" style="border:0;border-radius:0" id="litho-plast">
+          <div class="ch"><h4>&nbsp;</h4>${logSVG(i, dep)}</div>
+          ${i.lab.length?`<div class="ch"><h4>w, w<sub>P</sub>–w<sub>L</sub> <small>%</small></h4>${plastSVG(i, dep)}</div><div class="ch"><h4>I<sub>C</sub></h4>${icSVG(i, dep)}</div>`:''}
+          ${i.spt.length?`<div class="ch"><h4>N<sub>SPT</sub> <small>lov./30 cm</small></h4>${sptSVG(i, dep)}</div>`:''}
+        </div>
+        <div class="legend" style="margin-top:6px">${legend}<span><i style="background:#F28C00;border-radius:2px;transform:rotate(45deg)"></i>probă netulburată (US)</span><span><i style="background:#fff;border:2px solid #F28C00"></i>probă tulburată (S)</span>${i.lab.length?`<span><i style="background:#1F8FD8"></i>w</span><span><i style="background:#0A2F4F;border-radius:1px;height:3px;width:14px"></i>w<sub>P</sub>–w<sub>L</sub></span>`:''}${i.spt.length?`<span><i style="background:#0069B4"></i>N<sub>SPT</sub></span>`:''}</div></div></div>
+      <div>
+        <div class="panel"><h3>Stratificație (din fișa forajului) <span class="n">${i.straturi.length} straturi</span></h3>
+          <div class="tblwrap" style="border:0;max-height:420px"><table class="tbl"><thead><tr><th>De la [m]</th><th>Până la [m]</th><th>Gros. [m]</th><th>Descriere</th></tr></thead><tbody>
+          ${i.straturi.map(s=>`<tr><td class="num">${n2(s.de)}</td><td class="num">${s.la!=null?n2(s.la):'—'}</td><td class="num">${s.la!=null?n2(s.la-s.de):'—'}</td><td><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:${litho(s.descriere).c};margin-right:6px;vertical-align:-1px"></span>${esc(s.descriere)}</td></tr>`).join('')}
+          </tbody></table></div></div>
+        ${i.lab.length?`<div class="panel" style="margin-top:16px"><h3>Plasticitate <span class="n">${i.id} în diagrama Casagrande</span></h3><div class="in casa" style="max-width:440px">${casaSVG(LAB.map(p=>({wL:p.wL,IP:p.IP,us:p.netulburata,c:p.foraj===i.id?'#F28C00':'#9AA5B1',dim:p.foraj!==i.id,big:p.foraj===i.id,t:`${p.foraj} ${p.proba} · ${n1(p.adancime)} m · wL ${n1(p.wL)} %, IP ${n1(p.IP)} %`})).sort((a,b)=>(a.dim===b.dim?0:a.dim?-1:1)),{big:true})}</div></div>`:''}
+        ${i.spt.length?`<div class="panel" style="margin-top:16px"><h3>Încercări SPT <span class="n">${i.spt.length} încercări · din 2 în 2–3 m</span></h3>
+          <div class="tblwrap" style="border:0;max-height:300px"><table class="tbl"><thead><tr><th>Interval [m]</th><th>Lovituri (15-15-15 cm)</th><th>N<sub>SPT</sub></th></tr></thead><tbody>
+          ${i.spt.map(s=>`<tr><td class="num">${n2(s.de)} – ${n2(s.la)}</td><td class="num">${esc(s.valori)}</td><td class="num"><b>${s.N}</b></td></tr>`).join('')}</tbody></table></div></div>`:''}
+        ${wxPanel(i.data)}
+      </div>
+    </div>
+
+    <div class="panel" style="margin-top:18px"><h3>Rezultate de laborator <span class="n">${i.lab.length} probe · fișa ${esc(i.id_fisa)}</span></h3>
+      ${i.lab.length?`<div class="tblwrap" style="border:0"><table class="tbl lab">${labHead(detCols)}<tbody>${i.lab.map(p=>`<tr>${detCols.map((c,k)=>`<td class="${k>3||k==1?'num':(k==3?'desc':'')}">${c[1](p)}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`
+      : `<div class="in"><p class="probe-empty">Nu există probe încercate în laborator din acest foraj.</p></div>`}
+    </div>
+
+    <div class="cols" style="margin-top:18px;grid-template-columns:1fr 1fr">
+      <div class="panel"><h3>Mini-hartă <span class="n">foraj + CPT-ul turbinei</span></h3><div id="minimap" style="height:340px"></div></div>
+      <div class="panel"><h3>Foraje în vecinătate <span class="n">≤ 1,5 km</span></h3><div class="in">${nf.length?`<table class="tbl"><thead><tr><th>Foraj</th><th>Distanță</th><th>Cotă</th><th>Apă</th></tr></thead><tbody>${nf.map(x=>`<tr><td><a href="#/i/${x.i.id}"><b>${x.i.id}</b></a> <span style="color:var(--ink-3)">${esc(x.i.amplasare)}</span></td><td class="num">${(x.d/1000).toFixed(2).replace('.',',')} km</td><td class="num">${n1(x.i.cota)} m</td><td>${esc(waterTxt(x.i))}</td></tr>`).join('')}</tbody></table>`:'<p class="probe-empty" style="margin:0">Niciun alt foraj la mai puțin de 1,5 km.</p>'}</div></div>
+    </div>
+
+    ${galHTML(i)}
+    ${fise.length ? `<section class="block" style="border:0;padding-top:0"><div class="sec-h"><h2>Fișa de teren (manuscris)</h2><span class="n">${fise.map(f=>esc(f.original)).join(' · ')}</span></div>
+      <div class="fisa"><div style="display:grid;gap:10px;grid-template-columns:repeat(${Math.min(fise.length,2)},1fr)">${fise.map((f,k)=>`<a class="img" href="${f.src}" data-fisa="${k}"><img loading="lazy" src="${f.src}" alt="fișa ${i.id} pag. ${k+1}"></a>`).join('')}</div>
+      <div><p style="margin-top:0;color:var(--ink-2)">Fișa originală completată pe teren (${fise.length} pagini).</p></div></div></section>` : ''}
+    <p class="src" style="margin:14px 0 30px">Sursa datelor: fișa formatată „${esc(i.id_fisa)}” din <span class="mono">Fise Daeni +rezultate lab (WT1-WT56).xlsx</span> (GEO-TECH SRL – ing. geol. Török Tibor / Székely István); stratificația, probele, rezultatele de laborator și SPT sunt transcrise 1:1; denumirile pământurilor sunt cele din fișă (nu au fost reclasificate). Fotografiile provin din campania CPT (BBCGEOTEHNIC).</p>
+  `;
+  document.getElementById('detail-in').innerHTML = html;
+  const imgs = i.poze.map(p=>({src:p.src,cap:`${i.id} · ${p.original}`}));
+  fise.forEach((f,k)=>imgs.push({src:f.src,cap:`${i.id} · fișa de teren, pag. ${k+1}`}));
+  document.querySelectorAll('#gal a').forEach(a => a.onclick = e => { e.preventDefault(); openLB(imgs, +a.dataset.k); });
+  document.querySelectorAll('a[data-fisa]').forEach(a => a.onclick = e => { e.preventDefault(); openLB(imgs, i.poze.length + (+a.dataset.fisa)); });
+  miniMap(document.getElementById('minimap'), i.lat, i.lon, '#0069B4', i.dist_cpt>60?16:17);
+  // CPTu-ul turbinei (cel mai adânc): qc + SBT alături de coloana litologică, la aceeași scară de adâncime
+  const near = cpts.slice().sort((a,b)=>b.adancime-a.adancime)[0];
+  if (near) loadCPT().then(J => {
+    const t = J.teste.find(x=>x.id===near.id); if(!t) return;
+    const qmax = t.sumar.qc_max > 30 ? 50 : (t.sumar.qc_max > 15 ? 30 : 15);
+    const host = document.getElementById('litho-plast'); if(!host) return;
+    host.insertAdjacentHTML('beforeend', `<div class="ch"><h4>q<sub>c</sub> <small>MPa · ${t.id.replace('CPT-','')}</small></h4>${profileSVG(t.z, t.qc, {max:qmax, color:'#F28C00', dep, fill:true, ticks:3, hline:t.adancime, hlabel:'talpa CPTu', W:118})}</div>
+      <div class="ch"><h4>SBT</h4>${depthAxisSVG(dep, t.straturi_sbt, true)}</div>`);
+    host.querySelectorAll('svg').forEach(s=>{ s.style.height=''; s.style.width=''; });
+    document.getElementById('litho-h').innerHTML = `Coloană litologică + laborator + SPT + CPT <span class="n"><a href="#/cpt/${t.id}">CPT ${t.id}</a> (${n1(t.adancime)} m) · adâncimi în m</span>`;
+  }).catch(()=>{});
+}
+
+/* ============================ DETAIL CPT ============================ */
+function loadCPT(){ return CPTFULL ? Promise.resolve(CPTFULL) : fetch('cpt.json').then(r=>r.json()).then(j=>{ CPTFULL=j; return j; }); }
+
+function profileSVG(z, v, opts){
+  // diagramă verticală: adâncime pe Oy (în jos), valoare pe Ox
+  const {max, color='#0069B4', dep, ticks=4, fill=false, ref=null, log=false, bands=null, hline=null, hlabel='talpa foraj', W=170} = opts;
+  const H=H0, top=TOP, left=W<160?22:34, right=8, sc=H/dep;
+  const vx = x => { x = Math.max(0, Math.min(max, x)); return left + (log ? Math.log10(1+x)/Math.log10(1+max) : x/max) * (W-left-right); };
+  let g = '';
+  if (bands) bands.forEach(b => { g += `<rect x="${left}" y="${top+b.de*sc}" width="${W-left-right}" height="${(b.la-b.de)*sc}" fill="${b.culoare}" opacity=".35"/>`; });
+  for (let t=0; t<=ticks; t++){ const val = log ? (Math.pow(1+max, t/ticks)-1) : max*t/ticks; const x=vx(val); g += `<line x1="${x}" y1="${top}" x2="${x}" y2="${top+dep*sc}" stroke="#EDF0F3"/><text x="${x}" y="${top-4}" font-size="9" text-anchor="middle" fill="#7B8794">${val>=10?val.toFixed(0):val.toFixed(1).replace('.',',')}</text>`; }
+  for (let m=0; m<=dep+1e-9; m+=(dep>25?5:1)){ const y=top+m*sc; g += `<line x1="${left}" y1="${y}" x2="${W-right}" y2="${y}" stroke="#EDF0F3"/>`; }
+  if (ref!=null){ const x=vx(ref); g += `<line x1="${x}" y1="${top}" x2="${x}" y2="${top+dep*sc}" stroke="#7B8794" stroke-dasharray="3 3"/>`; }
+  if (hline!=null && hline<dep-0.2){ const y=top+hline*sc; g += `<line x1="${left}" y1="${y}" x2="${W-right}" y2="${y}" stroke="#0069B4" stroke-width="1.2" stroke-dasharray="5 3"/><text x="${W-right-2}" y="${y-3}" font-size="8.5" text-anchor="end" fill="#0069B4">${hlabel}</text>`; }
+  let d = '', area = `M${left},${top}`, lastY = top;
+  for (let k=0; k<z.length; k++){ if (v[k]==null) continue; const x=vx(v[k]), y=top+z[k]*sc; d += (d?'L':'M')+x.toFixed(1)+','+y.toFixed(1); area += ` L${x.toFixed(1)},${y.toFixed(1)}`; lastY=y; }
+  area += ` L${left},${lastY} Z`;
+  if (fill) g += `<path d="${area}" fill="${color}" opacity=".12"/>`;
+  g += `<path d="${d}" fill="none" stroke="${color}" stroke-width="1.1" stroke-linejoin="round"/>`;
+  g += `<rect x="${left}" y="${top}" width="${W-left-right}" height="${dep*sc}" fill="none" stroke="#D9DFE5"/>`;
+  return `<svg viewBox="0 0 ${W} ${H+top+8}" xmlns="http://www.w3.org/2000/svg">${g}</svg>`;
+}
+function depthAxisSVG(dep, straturi, bar){
+  const W=bar?34:70, H=H0, top=TOP, sc=H/dep, x0=bar?6:46, cw=18;
+  let g = '';
+  if (bar){ straturi.forEach(s => { g += `<rect x="${x0}" y="${top+s.de*sc}" width="${cw}" height="${(s.la-s.de)*sc}" fill="${s.culoare}" stroke="#4A5560" stroke-width=".6"><title>${s.de}–${s.la} m: ${esc(s.sbt)}</title></rect>`; }); return `<svg viewBox="0 0 ${W} ${H+top+8}" xmlns="http://www.w3.org/2000/svg">${g}</svg>`; }
+  const step = dep>25?1:0.5;
+  for (let m=0; m<=dep+1e-9; m+=step){ const y=top+m*sc; const maj=dep>25?(m%5===0):Number.isInteger(m); g += `<line x1="${x0-(maj?8:4)}" y1="${y}" x2="${x0}" y2="${y}" stroke="#4A5560"/>`; if(maj) g+=`<text x="${x0-11}" y="${y+3.5}" font-size="10" text-anchor="end" fill="#4A5560">${m}</text>`; }
+  g += `<line x1="${x0}" y1="${top}" x2="${x0}" y2="${top+dep*sc}" stroke="#4A5560"/>`;
+  straturi.forEach(s => { g += `<rect x="${x0+2}" y="${top+s.de*sc}" width="${cw}" height="${(s.la-s.de)*sc}" fill="${s.culoare}" stroke="#4A5560" stroke-width=".6"><title>${s.de}–${s.la} m: ${esc(s.sbt)}</title></rect>`; });
+  g += `<text x="${x0-11}" y="${top-4}" font-size="9" text-anchor="end" fill="#0A2F4F" font-weight="600">m</text><text x="${x0+11}" y="${top-4}" font-size="8" text-anchor="middle" fill="#7B8794">SBT</text>`;
+  return `<svg viewBox="0 0 ${W} ${H+top+8}" xmlns="http://www.w3.org/2000/svg">${g}</svg>`;
+}
+
+function renderCPTDetail(id){
+  const t0 = CPT.find(x=>x.id===id); if(!t0){ location.hash='#/'; return; }
+  const idx = CPT.indexOf(t0), prev = CPT[idx-1], next = CPT[idx+1];
+  const el = document.getElementById('detail-in');
+  el.innerHTML = `<a class="back" href="#/cpt">← Înapoi la lista CPT</a><p class="probe-empty">Se încarcă datele penetrării…</p>`;
+  loadCPT().then(J => {
+    const t = J.teste.find(x=>x.id===id); if(!t) return;
+    const f = forOf(t); const sib = CPT.filter(x=>x.turbina===t.turbina && x.id!==t.id);
+    const dep = Math.ceil(Math.max(t.adancime, f ? Math.min(+f.adancime||0, t.adancime+5) : 0)*2)/2;
+    const gmaps = t.lat!=null ? `https://www.google.com/maps?q=${t.lat},${t.lon}` : null;
+    const qmax = t.sumar.qc_max > 30 ? 50 : (t.sumar.qc_max > 15 ? 30 : 15);
+    const charts = [
+      ['q<sub>c</sub>', 'MPa', profileSVG(t.z, t.qc, {max:qmax, color:'#0069B4', dep, fill:true, ticks:3})],
+      ['f<sub>s</sub>', 'kPa', profileSVG(t.z, t.fs, {max: t.sumar.fs_med > 150 ? 600 : (t.sumar.fs_med > 100 ? 400 : 200), color:'#2E8B57', dep, fill:true, ticks:4})],
+      ['R<sub>f</sub>', '%', profileSVG(t.z, t.Rf, {max:8, color:'#F28C00', dep, ticks:4})],
+    ];
+    if (t.u2) charts.push(['u<sub>2</sub>', 'kPa', profileSVG(t.z, t.u2, {max: Math.max(200, Math.ceil(t.sumar.u2_max/100)*100), color:'#1F8FD8', dep, fill:true, ticks:4, ref:0})]);
+    charts.push(['I<sub>c</sub>', 'Robertson', profileSVG(t.z, t.Ic, {max:4, color:'#0A2F4F', dep, ticks:4, bands:t.straturi_sbt})]);
+    el.innerHTML = `
+      <a class="back" href="#/cpt">← Înapoi la lista CPT</a>
+      <div class="dhead">
+        <div><span class="type" style="background:var(--orange)">${t.tip==='CPTu'?'Penetrare statică cu piezocon (CPTu)':(t.manual?'Penetrare statică (CPT, citiri manuale)':'Penetrare statică cu con electric (CPT)')}</span>
+          <h1>CPT ${t.id}</h1></div>
+        <div style="color:var(--ink-2)">${fmtDateL(t.data)} · ${t.ora_start||''}${t.ora_final?' – '+t.ora_final:''}<br>turbina <b>${esc(t.turbina)}</b> · ${esc(D.zone[t.zona])}<br><span class="mono">${D.proiect.amplasament}</span></div>
+        <div class="pn"><a class="${prev?'':'dis'}" href="#/cpt/${prev?prev.id:''}">‹ ${prev?prev.id:''}</a><a class="${next?'':'dis'}" href="#/cpt/${next?next.id:''}">${next?next.id:''} ›</a></div>
+      </div>
+      ${t.nota?`<div class="note">${esc(t.nota)}</div>`:''}
+      <div class="meta">
+        <div class="kv"><span>Adâncime</span><b>${n2(t.adancime)} m</b><div class="sm">${t.sumar.n_puncte} citiri · pas ${t.manual?'5 cm':'1 cm (afișat 5 cm)'}</div></div>
+        <div class="kv"><span>q<sub>c</sub> mediu / max</span><b>${n2(t.sumar.qc_med)} / ${n2(t.sumar.qc_max)} MPa</b><div class="sm">f<sub>s</sub> mediu ${n1(t.sumar.fs_med)} kPa · R<sub>f</sub> mediu ${n2(t.sumar.Rf_med)} %</div></div>
+        ${t.u2?`<div class="kv water"><span>u<sub>2</sub> maxim</span><b>${n1(t.sumar.u2_max)} kPa</b><div class="sm">piezocon, a = 0,80</div></div>`:''}
+        <div class="kv"><span>Apă (ipoteză I<sub>c</sub>)</span><b>${t.gwl!=null?`NA ${n1(t.gwl)} m`:'fără apă'}</b><div class="sm">${t.gwl!=null?'din forajul '+esc(t.turbina):'nivel presupus sub adâncimea testului'}</div></div>
+        <div class="kv"><span>Poziție (WGS84)</span><b class="mono">${t.lat!=null?t.lat.toFixed(6)+', '+t.lon.toFixed(6):'—'}</b><div class="sm">${esc(t.coord_sursa)}${gmaps?` · <a href="${gmaps}" target="_blank" rel="noopener">Google Maps ↗</a>`:''}</div></div>
+        <div class="kv"><span>Stereo 70</span><b class="mono">${t.stereo70?`X ${t.stereo70.E.toFixed(2)} · Y ${t.stereo70.N.toFixed(2)}`:'—'}</b><div class="sm">con ${esc(t.con||'')}${t.sumar.incl_max!=null?` · înclinare max. ${n1(t.sumar.incl_max)}°`:''}</div></div>
+        <div class="kv"><span>Forajul turbinei</span><b>${f?`<a href="#/i/${f.id}">${f.id}</a> <span style="color:var(--ink-3);font-weight:400">${n0(f.adancime)} m · ${f.lab.length} probe</span>`:'—'}</b><div class="sm">${sib.length?`alt test la turbină: ${sib.map(x=>`<a href="#/cpt/${x.id}">${x.id}</a>`).join(', ')}`:'același punct cu forajul'}</div></div>
+      </div>
+
+      <div class="cpt-charts">
+        <div class="ch"><h4>Ad.</h4>${depthAxisSVG(dep, t.straturi_sbt)}</div>
+        ${charts.map(([n,u,svg])=>`<div class="ch"><h4>${n}<small>${u}</small></h4>${svg}</div>`).join('')}
+        ${f?`<div class="ch"><h4>Foraj <small>${f.id}</small></h4>${logSVG(f, dep)}</div>`:''}
+      </div>
+      <div class="sbt-leg">${Object.keys(J.meta.sbt).filter(k=>t.straturi_sbt.some(s=>s.zona==k)).map(k=>`<span><i style="background:${J.meta.sbt_culori[k]}"></i>${k} – ${esc(J.meta.sbt[k])}</span>`).join('')}${f?`<span style="color:var(--ink-3)">· ultima coloană: stratificația forajului ${f.id} (fișă), aceeași scară de adâncime, trunchiată la ${n1(dep)} m</span>`:''}</div>
+      <p class="src">${esc(J.meta.ipoteze)}</p>
+
+      <div class="cols" style="margin-top:18px;grid-template-columns:1fr 1fr">
+        <div>
+          <div class="panel"><h3>Straturi după SBT (Robertson) <span class="n">${t.straturi_sbt.length} straturi · fuzionate la min. 0,40 m</span></h3>
+            <div class="tblwrap" style="border:0"><table class="tbl"><thead><tr><th>De la [m]</th><th>Până la [m]</th><th>Zonă</th><th>Tip de comportament (SBT)</th></tr></thead><tbody>
+            ${t.straturi_sbt.map(s=>`<tr><td class="num">${n2(s.de)}</td><td class="num">${n2(s.la)}</td><td class="num">${s.zona}</td><td><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:${s.culoare};margin-right:6px;vertical-align:-1px"></span>${esc(s.sbt)}</td></tr>`).join('')}
+            </tbody></table></div></div>
+          <div class="panel" style="margin-top:16px"><h3>Valori medii pe benzi de 1 m</h3>
+            <div class="tblwrap" style="border:0;max-height:420px"><table class="tbl"><thead><tr><th>Interval [m]</th><th>q<sub>c</sub> med [MPa]</th><th>q<sub>c</sub> min–max</th><th>f<sub>s</sub> med [kPa]</th><th>R<sub>f</sub> [%]</th><th>I<sub>c</sub></th></tr></thead><tbody>
+            ${t.benzi_1m.map(b=>`<tr><td class="num">${n0(b.de)}–${n0(b.la)}</td><td class="num">${n2(b.qc_med)}</td><td class="num">${n2(b.qc_min)} – ${n2(b.qc_max)}</td><td class="num">${n1(b.fs_med)}</td><td class="num">${n2(b.Rf_med)}</td><td class="num">${n2(b.Ic_med)}</td></tr>`).join('')}
+            </tbody></table></div></div>
+        </div>
+        <div>
+          <div class="panel"><h3>Mini-hartă</h3><div id="minimap" style="height:320px"></div></div>
+          ${wxPanel(t.data)}
+          <div class="panel" style="margin-top:16px"><h3>Fișier sursă</h3><div class="in" style="font-size:13px;color:var(--ink-2)">${t.manual?'Citiri manuale':'Export Geo-Explorer'} <span class="mono">${esc(t.fisier)}</span> (antet „${esc(t.test_nr)}”; ${t.con_tip}; con ${esc(t.con||'')}; operator ${esc(t.operator||'—')}). Datele brute (q<sub>c</sub>, f<sub>s</sub>, înclinare) sunt în folderele campaniei (<span class="mono">1 8 nov 2025</span>, <span class="mono">15 nov 2025</span>, <span class="mono">30 nov 2025</span>, <span class="mono">9 dec 2025</span>, <span class="mono">WT*</span>); prelucrarea oficială în CPeT-IT (<span class="mono">Turbine Daeni rev 7.cpt</span>), cea de aici în <span class="mono">scripts/build_cpt.py</span> (indicativă).</div></div>
+        </div>
+      </div>
+      ${f?galHTML(f, t.id):''}`;
+    if (f){ const imgs = f.poze.map(p=>({src:p.src,cap:`${f.id} · ${p.original}`})); document.querySelectorAll('#gal a').forEach(a => a.onclick = e => { e.preventDefault(); openLB(imgs, +a.dataset.k); }); }
+    miniMap(document.getElementById('minimap'), t.lat, t.lon, '#F28C00', 17);
+  }).catch(err => { el.innerHTML += `<p class="note">Nu s-a putut încărca cpt.json: ${esc(err.message)}</p>`; });
+}
+
+/* ============================ LIGHTBOX ============================ */
+let LB = {imgs:[],k:0};
+function openLB(imgs,k){ LB={imgs,k}; showLB(); document.getElementById('lb').classList.add('open'); }
+function showLB(){ const it=LB.imgs[LB.k]; document.getElementById('lb-img').src=it.src; document.getElementById('lb-cap').textContent=`${it.cap}  (${LB.k+1}/${LB.imgs.length})`; }
+document.getElementById('lb-x').onclick = () => document.getElementById('lb').classList.remove('open');
+document.getElementById('lb-p').onclick = () => { LB.k=(LB.k-1+LB.imgs.length)%LB.imgs.length; showLB(); };
+document.getElementById('lb-n').onclick = () => { LB.k=(LB.k+1)%LB.imgs.length; showLB(); };
+document.getElementById('lb').onclick = e => { if(e.target.id==='lb') e.target.classList.remove('open'); };
+document.addEventListener('keydown', e => { const lb=document.getElementById('lb'); if(!lb.classList.contains('open')) return; if(e.key==='Escape') lb.classList.remove('open'); if(e.key==='ArrowLeft') document.getElementById('lb-p').click(); if(e.key==='ArrowRight') document.getElementById('lb-n').click(); });
+
+/* ============================ ROUTER ============================ */
+function route(){
+  const h = location.hash.replace(/^#/,'') || '/';
+  const home = document.getElementById('home'), det = document.getElementById('detail');
+  const m = h.match(/^\/i\/([A-Za-z0-9_]+)/), mc = h.match(/^\/cpt\/([A-Za-z0-9.\-]+)/);
+  document.querySelectorAll('.nav a').forEach(a=>a.classList.toggle('active', a.dataset.nav===h));
+  if (m||mc){ home.style.display='none'; det.classList.add('open'); if(m) renderDetail(decodeURIComponent(m[1])); else renderCPTDetail(mc[1]); window.scrollTo(0,0); return; }
+  det.classList.remove('open'); home.style.display='block';
+  if (map) setTimeout(()=>map.invalidateSize(),50);
+  const sec = {'/harta':'harta','/foraje':'foraje','/cpt':'cpt','/laborator':'laborator','/galerie':'galerie','/zile':'zile','/tabel':'tabel'}[h];
+  if (sec) document.getElementById(sec).scrollIntoView({behavior:'smooth'}); else if (h==='/') window.scrollTo({top:0});
+}
+window.addEventListener('hashchange', route);
+
+/* ============================ INIT ============================ */
+fetch('data.json',{cache:'no-cache'}).then(r=>r.json()).then(d => {
+  D = d; INV = d.investigatii.slice();   // ordinea din data.json: grupuri CPT (plan), apoi stațiile
+  CPT = (d.cpt && d.cpt.teste || []).slice();
+  LAB = INV.flatMap(i => i.lab.map(p => Object.assign({foraj:i.id, zona:i.zona}, p)));
+  try { renderHome(); } catch(e){ console.error(e); }
+  fetch('terrain.json',{cache:'no-cache'}).then(r=>r.ok?r.json():null).then(T => { try { if (T && window.initIntro3D) window.initIntro3D(D, INV, CPT, T); } catch(e){ console.error(e); } }).catch(()=>{});
+  route();
+  document.getElementById('chips').onclick = e => { const b=e.target.closest('.chip'); if(!b) return; filt=b.dataset.f; document.querySelectorAll('#chips .chip').forEach(c=>c.classList.toggle('on',c===b)); renderGrid(); };
+  document.getElementById('cpt-chips').onclick = e => { const b=e.target.closest('.chip'); if(!b) return; cfilt=b.dataset.f; document.querySelectorAll('#cpt-chips .chip').forEach(c=>c.classList.toggle('on',c===b)); renderCPTGrid(); };
+  document.getElementById('lab-chips').onclick = e => { const b=e.target.closest('.chip'); if(!b) return; lfilt=b.dataset.f; document.querySelectorAll('#lab-chips .chip').forEach(c=>c.classList.toggle('on',c===b)); renderLab(); };
+  document.getElementById('lab-sel').onchange = e => { lsel=e.target.value; renderLab(); };
+  document.getElementById('q').oninput = e => { q=e.target.value.trim().toLowerCase(); renderGrid(); };
+  document.getElementById('btn-csv').onclick = exportCSV;
+  document.getElementById('btn-csv-cpt').onclick = exportCSVcpt;
+  document.getElementById('btn-csv-lab').onclick = exportCSVlab;
+  document.getElementById('btn-csv-spt').onclick = exportCSVspt;
+}).catch(err => { document.getElementById('app').innerHTML = `<div class="wrap" style="padding:40px 20px"><h2>Nu s-a putut încărca <span class="mono">data.json</span></h2><p>${esc(err.message)}. Dacă deschizi fișierul direct de pe disc, rulează un server local (<span class="mono">python -m http.server</span>) sau publică pe GitHub Pages.</p></div>`; });
+</script>
+</body>
+</html>
