@@ -74,6 +74,35 @@ def merge_desc(descs):
     return ' | '.join(uniq)
 
 
+CULORI = ['maroniu închis', 'maroniu gălbui', 'maroniu', 'cafeniu-gălbui', 'gălbui-cenușiu', 'gălbui', 'cenușiu', 'verzui', 'roșietic']
+UMID = ['foarte uscat', 'uscat', 'ușor umed', 'foarte umed', 'umed']
+CONS = ['moale', 'consistentă', 'consistent', 'vârtoasă', 'vârtos', 'tare', 'plastic']
+
+
+def split_desc(desc):
+    """„Praf nisipos slab argilos cafeniu-gălbui, foarte umed, consistent / vârtos” ->
+    {nume, culoare, umiditate, consistenta}; variantele „A | B” se combină (valori unice, în ordine)."""
+    out = {'nume': [], 'culoare': [], 'umiditate': [], 'consistenta': []}
+    for var in str(desc).split(' | '):
+        s = re.sub(r'\s+', ' ', var).strip()
+        s = s.replace('cafeniu- gălbui', 'cafeniu-gălbui').replace('maroniu -închis', 'maroniu închis').replace('maroniu -gălbui', 'maroniu gălbui')
+        s = s.replace('gălbui-cenusiu', 'gălbui-cenușiu').replace('loesssoid', 'loessoid').replace('alteratie', 'alterație')
+        low = s.lower(); cul = []; um = []; con = []
+        for c in CULORI:
+            if c in low and not any(c in x for x in cul): cul.append(c); low = low.replace(c, ' ')
+        for u in UMID:
+            if re.search(r'\b' + u + r'\b', low): um.append(u); low = re.sub(r'\b' + u + r'\b', ' ', low)
+        for c in CONS:
+            if re.search(r'\b' + c + r'\b', low): con.append(c.replace('consistentă', 'consistent').replace('vârtoasă', 'vârtos')); low = re.sub(r'\b' + c + r'\b', ' ', low)
+        nume = re.sub(r'\s*/\s*$', '', re.sub(r'\s+', ' ', low)).strip(' ,/')
+        nume = re.sub(r'\s*,\s*,+', ',', nume).replace(' ,', ',').strip(' ,')
+        nume = nume[:1].upper() + nume[1:]
+        for k, v in (('nume', [nume]), ('culoare', cul), ('umiditate', um), ('consistenta', con)):
+            for x in v:
+                if x and x not in out[k]: out[k].append(x)
+    return {k: ' / '.join(v) for k, v in out.items()}
+
+
 def parse_fisa(ws):
     rows = list(ws.iter_rows(values_only=True))
     iid = x = y = z0 = None; water = []; descs = []; bounds = []; bottom = 0.0; spt = []; probe = []
@@ -96,6 +125,7 @@ def parse_fisa(ws):
                 p = {'proba': r[8].strip(), 'netulburata': r[8].strip().startswith('US'), 'tip': 'US' if r[8].strip().startswith('US') else 'DS',
                      'interval': iv.replace('.', ','), 'de': de, 'adancime': la if la is not None else d, 'denumire': clean_desc(r[7]) if r[7] else None}
                 for k, v in zip(LAB_KEYS, r[10:30]): p[k] = fnum(v)
+                p.update({('d_' + k): v for k, v in split_desc(p['denumire'] or '').items()})
                 if p['IC'] is None and p['w'] is not None and p['wL'] is not None and p['IP']: p['IC'] = round((p['wL'] - p['w']) / p['IP'], 2)
                 probe.append(p)
         if isinstance(r[31], str) and r[31].strip() and r[33] is not None:
@@ -107,7 +137,7 @@ def parse_fisa(ws):
         ds = [clean_desc(t) for d, t in descs if top < d <= bot + 1e-6]
         if not ds and layers: ds = [layers[-1]['descriere']]
         desc = merge_desc(ds) if ds else '—'
-        layers.append({'de': top, 'la': bot, 'descriere': desc}); top = bot
+        layers.append(dict({'de': top, 'la': bot, 'descriere': desc}, **split_desc(desc))); top = bot
     for k, L in enumerate(layers): L['nr'] = k + 1
     # SPT: dedublare (rândurile de continuare repetă uneori ultima încercare)
     seen = set(); spt2 = []
