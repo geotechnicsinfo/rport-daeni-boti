@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Cache-Control" content="no-cache">
 <title>Investigații de teren – Parc eolian Dăeni</title>
 <meta name="description" content="Raport interactiv al investigațiilor geotehnice de teren (foraje geotehnice cu SPT, penetrări statice CPT și încercări de laborator) executate pentru fundațiile turbinelor Parcului eolian Dăeni, jud. Tulcea.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -988,7 +989,7 @@ function renderDetail(id){
 
 const icBehav = z => z<=3 ? 'clay-like' : (z<=5 ? 'transitional' : 'sand-like');
 /* ============================ DETAIL CPT ============================ */
-function loadCPT(){ return CPTFULL ? Promise.resolve(CPTFULL) : fetch('cpt.json').then(r=>r.json()).then(j=>{ CPTFULL=j; return j; }); }
+function loadCPT(){ return CPTFULL ? Promise.resolve(CPTFULL) : fetch('cpt.json',{cache:'no-cache'}).then(r=>r.json()).then(j=>{ CPTFULL=j; return j; }); }
 
 function profileSVG(z, v, opts){
   // diagramă verticală: adâncime pe Oy (în jos), valoare pe Ox
